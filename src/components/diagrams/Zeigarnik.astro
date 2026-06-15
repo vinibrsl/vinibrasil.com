@@ -1,0 +1,353 @@
+---
+// The Zeigarnik effect, drawn as cognitive load. Unfinished task-loops drop
+// into a mind one by one. While a loop is open (a ring with a gap) it *rattles*
+// — the post's own word: unfinished work "keeps rattling around." A segmented
+// COGNITIVE LOAD meter climbs a notch with each loop. Then every loop snaps
+// shut at once, goes still, and dissolves — and the meter crashes back down.
+// That release is the point: the cheapest fix is to close the loop faster.
+//
+// Same DRY contract as every diagram (see BookLLM.astro): layout (centering,
+// width, margin) comes from the shared .diagram base in global.css; this file
+// owns only what's unique — the geometry, the scoped paint/animation, the
+// reduced-motion still frame, the a11y text. Geometry is COMPUTED here, so the
+// meter re-segments and the loops re-place from the constants below. Pure SVG
+// + CSS, zero client JS.
+
+const head = { cx: 188, cy: 146, r: 106 };
+
+// the open task-loops piling up inside the mind. Each enters at its own moment
+// (encoded in the zg-pop-i keyframes, in step with the meter), then rattles on
+// a slightly different beat (jd/jdelay) so the cluster never moves in unison.
+// `off` rotates each one's gap so the loose ends don't all point the same way.
+const TR = 18; // task-loop radius
+const TC = +(2 * Math.PI * TR).toFixed(2); // circumference, for the open-ring gap
+const loops = [
+  { x: 158, y: 114, jd: 0.43, jdelay: -0.1, off: 0 },
+  { x: 220, y: 122, jd: 0.51, jdelay: -0.32, off: 34 },
+  { x: 150, y: 168, jd: 0.47, jdelay: -0.05, off: 70 },
+  { x: 214, y: 176, jd: 0.55, jdelay: -0.22, off: 18 },
+  { x: 188, y: 146, jd: 0.49, jdelay: -0.16, off: 52 },
+];
+
+// the cognitive-load meter on the right, drawn as stacked LED cells. The lit
+// fill grows from the bottom; the gap stripes (painted in the page colour)
+// chop that continuous fill into discrete cells, and the cell outlines show
+// the unlit track too.
+const bar = { x: 482, y: 56, w: 54, h: 250 };
+const SEG = 12;
+const GAP = 4;
+const sh = (bar.h - (SEG - 1) * GAP) / SEG; // one cell's height
+const pitch = sh + GAP;
+const cells = Array.from({ length: SEG }, (_, i) => +(bar.y + i * pitch).toFixed(2));
+const gaps = Array.from({ length: SEG - 1 }, (_, k) =>
+  +(bar.y + (k + 1) * pitch - GAP).toFixed(2),
+);
+const labX = bar.x + bar.w + 20;
+const labY = bar.y + bar.h / 2;
+---
+
+<svg
+  class="zg diagram"
+  viewBox="0 0 640 380"
+  role="img"
+  aria-labelledby="zg-title zg-desc"
+  xmlns="http://www.w3.org/2000/svg"
+  style={`--tc:${TC}px`}
+>
+  <title id="zg-title">The Zeigarnik effect: unfinished tasks pile up as cognitive load</title>
+  <desc id="zg-desc">
+    A head in profile stands in for the mind. Unfinished task-loops — small
+    rings left open by a gap — drop into it one after another, each rattling
+    while it stays open. A segmented meter labelled cognitive load climbs a
+    notch with every loop. Then the loops all snap closed at once, go still, and
+    dissolve, and the meter drops back to empty: the relief of clearing them.
+    This is the Zeigarnik effect — unfinished work keeps its grip, and keeps
+    adding load, until it is done.
+  </desc>
+
+  <!-- the mind -->
+  <g class="mind">
+    <path
+      class="shoulders"
+      d="M64 352 C 78 300 150 286 188 286 C 226 286 298 300 312 352"
+      fill="none"></path>
+    <circle class="skull" cx={head.cx} cy={head.cy} r={head.r}></circle>
+  </g>
+
+  <!-- the load is fed from the open loops into the meter -->
+  <g class="feed">
+    <path class="feed-line" d={`M 292 166 C 374 190 416 282 ${bar.x - 2} 286`} fill="none"></path>
+    <polygon class="feed-head" points={`${bar.x + 2},286 ${bar.x - 11},280 ${bar.x - 11},292`}></polygon>
+  </g>
+
+  <!-- unfinished task-loops accumulating inside the mind -->
+  {
+    loops.map((l, i) => (
+      <g class="task" style={`animation-name:zg-pop-${i}`}>
+        <circle
+          class="loop"
+          cx={l.x}
+          cy={l.y}
+          r={TR}
+          fill="none"
+          style={`--jd:${l.jd}s;--jdelay:${l.jdelay}s;stroke-dashoffset:${l.off}`}
+        />
+      </g>
+    ))
+  }
+
+  <!-- the cognitive-load meter -->
+  <g class="gauge">
+    <rect
+      class="bar-fill"
+      x={bar.x}
+      y={bar.y}
+      width={bar.w}
+      height={bar.h}
+      rx="3"></rect>
+    {gaps.map((y) => <rect class="gapstripe" x={bar.x - 1} y={y} width={bar.w + 2} height={GAP} />)}
+    {cells.map((y) => <rect class="cell" x={bar.x} y={y} width={bar.w} height={sh} rx="2" />)}
+    <rect class="bar-frame" x={bar.x} y={bar.y} width={bar.w} height={bar.h} rx="4"></rect>
+    <text
+      class="lab unit"
+      x={labX}
+      y={labY}
+      transform={`rotate(90 ${labX} ${labY})`}>COGNITIVE LOAD</text>
+  </g>
+
+  <text class="lab foot" x={head.cx} y="372">OPEN LOOPS</text>
+</svg>
+
+<style>
+  .zg {
+    --diagram-max: 580px;
+  }
+
+  /* the mind */
+  .zg .skull {
+    fill: var(--accent);
+    fill-opacity: 0.04;
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    stroke-opacity: 0.6;
+  }
+  .zg .shoulders {
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    stroke-opacity: 0.4;
+    stroke-linecap: round;
+  }
+
+  /* the cause-to-effect link: open loops feeding the meter */
+  .zg .feed-line {
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-opacity: 0.32;
+    stroke-dasharray: 3 7;
+    stroke-linecap: round;
+    animation: zg-feed 1.4s linear infinite;
+  }
+  .zg .feed-head {
+    fill: var(--accent);
+    fill-opacity: 0.45;
+  }
+
+  /* an unfinished task-loop: an open ring that rattles while it's open, then
+     closes its gap into a calm full ring before dissolving. The outer <g>
+     handles the pop-in/dissolve (one keyframe per loop); the ring itself
+     rattles (zg-rattle, on its own beat) and closes (zg-close, shared). */
+  .zg .task {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-duration: 9s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .zg .loop {
+    stroke: var(--accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: calc(var(--tc) * 0.7) calc(var(--tc) * 0.3);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: zg-rattle, zg-close;
+    animation-duration: var(--jd, 0.5s), 9s;
+    animation-timing-function: ease-in-out, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    animation-delay: var(--jdelay, 0s), 0s;
+  }
+
+  /* the meter */
+  .zg .bar-fill {
+    fill: var(--accent);
+    fill-opacity: 0.85;
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transform: scaleY(0.04);
+    animation: zg-load 9s ease-in-out infinite;
+  }
+  .zg .gapstripe {
+    fill: var(--bg);
+  }
+  .zg .cell {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-opacity: 0.26;
+  }
+  .zg .bar-frame {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-opacity: 0.55;
+  }
+
+  /* labels */
+  .zg .lab {
+    font-family: var(--font-mark, monospace);
+    fill: var(--muted);
+  }
+  .zg .lab.unit {
+    font-size: 13px;
+    fill: var(--accent);
+    letter-spacing: 0.16em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  .zg .lab.foot {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-anchor: middle;
+  }
+
+  /* the link's dashes drift toward the meter while load is building */
+  @keyframes zg-feed {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+
+  /* the tremor of unfinished work — small, fast, off-centre */
+  @keyframes zg-rattle {
+    0% {
+      transform: rotate(-3deg) translate(0.6px, -0.4px);
+    }
+    25% {
+      transform: rotate(2.6deg) translate(-0.5px, 0.5px);
+    }
+    50% {
+      transform: rotate(-2deg) translate(0.4px, 0.5px);
+    }
+    75% {
+      transform: rotate(3deg) translate(-0.5px, -0.5px);
+    }
+    100% {
+      transform: rotate(-3deg) translate(0.6px, -0.4px);
+    }
+  }
+
+  /* every loop snaps its gap shut at the same moment — the collective clear */
+  @keyframes zg-close {
+    0%,
+    66% {
+      stroke-dasharray: calc(var(--tc) * 0.7) calc(var(--tc) * 0.3);
+    }
+    76%,
+    100% {
+      stroke-dasharray: var(--tc) 0;
+    }
+  }
+
+  /* the meter steps up one notch per loop, then crashes when they all clear */
+  @keyframes zg-load {
+    0%,
+    7% {
+      transform: scaleY(0.04);
+    }
+    10%,
+    20% {
+      transform: scaleY(0.2);
+    }
+    23%,
+    33% {
+      transform: scaleY(0.4);
+    }
+    36%,
+    46% {
+      transform: scaleY(0.6);
+    }
+    49%,
+    59% {
+      transform: scaleY(0.8);
+    }
+    62%,
+    80% {
+      transform: scaleY(1);
+    }
+    90%,
+    100% {
+      transform: scaleY(0.04);
+    }
+  }
+
+  /* one pop-in keyframe per loop: hidden until its moment, held open through
+     the rattle, then it dissolves outward (scale up + fade) at the clear.
+     Only the entry time differs between them. */
+  @keyframes zg-pop-0 {
+    0%, 6% { opacity: 0; transform: scale(0.3); }
+    9% { opacity: 1; transform: scale(1.16); }
+    12%, 80% { opacity: 1; transform: scale(1); }
+    86% { opacity: 0.85; transform: scale(1.06); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+  @keyframes zg-pop-1 {
+    0%, 19% { opacity: 0; transform: scale(0.3); }
+    22% { opacity: 1; transform: scale(1.16); }
+    25%, 80% { opacity: 1; transform: scale(1); }
+    86% { opacity: 0.85; transform: scale(1.06); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+  @keyframes zg-pop-2 {
+    0%, 32% { opacity: 0; transform: scale(0.3); }
+    35% { opacity: 1; transform: scale(1.16); }
+    38%, 80% { opacity: 1; transform: scale(1); }
+    86% { opacity: 0.85; transform: scale(1.06); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+  @keyframes zg-pop-3 {
+    0%, 45% { opacity: 0; transform: scale(0.3); }
+    48% { opacity: 1; transform: scale(1.16); }
+    51%, 80% { opacity: 1; transform: scale(1); }
+    86% { opacity: 0.85; transform: scale(1.06); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+  @keyframes zg-pop-4 {
+    0%, 58% { opacity: 0; transform: scale(0.3); }
+    61% { opacity: 1; transform: scale(1.16); }
+    64%, 80% { opacity: 1; transform: scale(1); }
+    86% { opacity: 0.85; transform: scale(1.06); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+
+  /* resting state: the canonical still picture — a mind full of open loops with
+     the load meter near the top. The cost of the effect, held in one frame. */
+  @media (prefers-reduced-motion: reduce) {
+    .zg .task {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .zg .loop {
+      animation: none;
+      stroke-dasharray: calc(var(--tc) * 0.74) calc(var(--tc) * 0.26);
+    }
+    .zg .bar-fill {
+      animation: none;
+      transform: scaleY(0.8);
+    }
+    .zg .feed-line {
+      animation: none;
+    }
+  }
+</style>

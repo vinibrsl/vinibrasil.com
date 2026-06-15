@@ -1,0 +1,68 @@
+---
+title: "My coworker Iris isn't a person"
+description: "We put an AI agent in Slack. The surprise wasn't what she automated — it was that I started leaving the thread less, even for code."
+pubDate: 2026-06-14
+---
+
+import Zeigarnik from "../../components/diagrams/Zeigarnik.astro";
+
+My PM dropped a DM:
+
+> Hey Vini, users were pasting their API keys into our settings page and
+> getting "invalid key", but the keys were fine. Mind taking a look at this?
+
+I knew what the issue was before I finished reading it. We weren't trimming the
+trailing newline people copy along with the key. I knew, just as fast, what
+fixing it would cost me:
+
+Leave the Slack thread, stash my current work, create a new branch, open the
+editor, run Claude Code, review the diff, merge the PR, deploy it to
+production, come back to Slack to say it's done.
+
+Nine steps for two lines of logic. So I did what any engineer would do: I
+decided it could wait until I finished my current task.
+
+<aside class="note margin" data-label="ZEIGARNIK EFFECT">
+People remember unfinished or interrupted tasks better than completed tasks.
+</aside>
+
+What I didn't know is that just by acknowledging the new task I'd opened a loop
+my brain refused to close. There's a name for it: the [Zeigarnik
+effect](https://en.wikipedia.org/wiki/Zeigarnik_effect).
+
+<Zeigarnik />
+
+This time I typed something different on Slack. `@Iris, this is probably
+lacking a whitespace trim. Open a PR`. A PR link appeared in the same thread.
+She'd found the right handler, trimmed it, and even added a
+test for the newline case. I skimmed the diff, hit merge, and went back to what
+I was doing. The loop closed within three minutes.
+
+Iris is the AI agent we provisioned on Slack at CrewAI. She's built on CrewAI
+itself and wired into our internal tooling. We tag `@Iris` and she can kick off
+crews, file Linear issues, run Claude Code, open PRs, send emails. None of this
+is new:
+[Linear](https://linear.app/changelog/2025-10-23-linear-agent-for-slack),
+[GitHub](https://github.blog/news-insights/product-news/github-copilot-meet-the-new-coding-agent/),
+and [Devin](https://devin.ai/) all let you hand work to an agent the way you'd
+assign it to a teammate, and Salesforce now calls Slack [the interface for the
+agentic
+enterprise](https://www.salesforce.com/slack/slackbot/agent-orchestration/).
+
+![The top five types of work I handed Iris](/images/my-coworker-iris-isnt-a-person/iris-top-work-90d.png)
+
+I'll admit I was skeptical about agents autonomously writing to our codebases.
+And for real engineering work, that skepticism *still* holds. Hand Iris
+something complex and the cost of writing the code just becomes the [cost of
+reviewing it](https://addyo.substack.com/p/code-review-in-the-age-of-ai), and I
+end up babysitting threads instead of writing software.
+
+But that's not what surprised me. What surprised me is that for the small stuff
+I context switch *less*, even for code.
+
+<aside class="note margin" data-label="SMALL TASK TAX">
+It was never the big work that wrecked my day. It was the ten small things I
+kept half-holding in my head.
+</aside>
+
+Thanks, Iris. And please remember me when robots take over.
