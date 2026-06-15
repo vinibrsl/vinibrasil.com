@@ -16,7 +16,7 @@ Live at **[vinibrasil.com](https://vinibrasil.com)**.
 - **Departure Mono** + **Newsreader**, a single retro-blue accent, warm paper theme
 - Auto-generated **Open Graph cards** (`scripts/generate-og.mjs`), **RSS** (`/rss.xml`), and **sitemap**
 - **LLM-ready**: an [`/llms.txt`](https://llmstxt.org) index, `/llms-full.txt`, and a clean Markdown twin of every post at `/<slug>.md` (see `src/lib/posts.ts`)
-- A thin **Cloudflare Worker** (`src/worker.js`) that 301-redirects `www` → apex
+- Served as pure **Cloudflare Static Assets** (no Worker, zero compute); `www` → apex is a Cloudflare Redirect Rule
 
 ## Develop
 
@@ -52,9 +52,11 @@ config lives in `wrangler.jsonc`.
 npm run deploy   # npm run build && wrangler deploy
 ```
 
-The build is served from Cloudflare Static Assets with `src/worker.js` in front.
-Routes (apex + `www`) are bound in `wrangler.jsonc` and require `vinibrasil.com`
-to be an active zone in the Cloudflare account.
+The build is served directly from Cloudflare Static Assets — there's no Worker
+script, so requests incur no compute. The `www` → apex 301 is handled by a
+Cloudflare Redirect Rule at the edge. Routes (apex + `www`) are bound in
+`wrangler.jsonc` and require `vinibrasil.com` to be an active zone in the
+Cloudflare account.
 
 ## Fonts
 
