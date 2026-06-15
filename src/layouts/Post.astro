@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import Base from "./Base.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import { SITE_TITLE } from "../consts";
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -17,6 +18,8 @@ const { title, description, pubDate, updatedDate } = post.data;
   type="article"
   publishedTime={pubDate}
   updatedTime={updatedDate}
+  image={`/og/${post.id}.png`}
+  imageAlt={`${title} — ${SITE_TITLE}`}
 >
   <article class="post">
     <header class="post-header">

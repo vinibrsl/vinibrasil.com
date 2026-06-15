@@ -9,9 +9,12 @@ interface Props {
   type?: "website" | "article";
   publishedTime?: Date;
   updatedTime?: Date;
+  image?: string;
+  imageAlt?: string;
 }
 
-const { title, description, type, publishedTime, updatedTime } = Astro.props;
+const { title, description, type, publishedTime, updatedTime, image, imageAlt } =
+  Astro.props;
 ---
 
 <!doctype html>
@@ -23,6 +26,8 @@ const { title, description, type, publishedTime, updatedTime } = Astro.props;
       type={type}
       publishedTime={publishedTime}
       updatedTime={updatedTime}
+      image={image}
+      imageAlt={imageAlt}
     />
   </head>
   <body>
