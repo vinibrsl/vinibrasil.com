@@ -1,0 +1,25 @@
+{
+  // Static Astro site on Cloudflare Workers Static Assets, with a thin
+  // Worker (src/worker.js) in front to 301 www → apex.
+  // Build with `npm run build` (writes ./dist), then `npm run deploy`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vinibrsl-blog",
+  "compatibility_date": "2026-06-14",
+  "main": "src/worker.js",
+  "assets": {
+    "directory": "./dist",
+    // Bind the asset server so the Worker can serve files itself.
+    "binding": "ASSETS",
+    // Run the Worker on every request (so the www redirect always fires,
+    // even for paths that match a static file).
+    "run_worker_first": true,
+    // Serve the Astro-generated 404.html for unknown paths.
+    "not_found_handling": "404-page"
+  },
+  // Attach both hostnames so the Worker receives www traffic to redirect it.
+  // Requires vinibrasil.com to be an active zone in this Cloudflare account.
+  "routes": [
+    { "pattern": "vinibrasil.com", "custom_domain": true },
+    { "pattern": "www.vinibrasil.com", "custom_domain": true }
+  ]
+}

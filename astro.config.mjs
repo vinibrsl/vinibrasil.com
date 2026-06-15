@@ -5,7 +5,7 @@ import mdx from "@astrojs/mdx";
 import rehypeMermaid from "rehype-mermaid";
 
 // Update this to your production domain before deploying.
-export const SITE = "https://vinibrsl.dev";
+export const SITE = "https://vinibrasil.com";
 
 /**
  * rehype plugin: turn each post image into a technical figure —
