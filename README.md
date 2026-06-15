@@ -1,29 +1,35 @@
-# Vinicius Brasil blog
+# Vinicius Brasil — blog
 
-A personal dev blog. Static, fast, minimal — built with [Astro](https://astro.build),
-written in Markdown, deployed to Cloudflare Pages.
+My personal blog: short notes on big ideas, code, and a curious life. Static,
+fast, and minimal — built with [Astro](https://astro.build), written in
+Markdown, and deployed to [Cloudflare Workers](https://workers.cloudflare.com).
+
+Live at **[vinibrasil.com](https://vinibrasil.com)**.
+
+![Screenshot of the blog homepage](docs/screenshot.png)
 
 ## Stack
 
 - **Astro v5** — static output, near-zero client JS
-- **Markdown** posts in `src/content/blog/`, validated by a type-safe schema
-- **Shiki** syntax highlighting at build time
-- **Departure Mono** for titles, a single retro-blue accent, warm paper theme + dark mode
-- Built-in **RSS** (`/rss.xml`), **sitemap**, and full Open Graph / Twitter meta
+- **Markdown / MDX** posts in `src/content/blog/`, validated by a type-safe schema
+- **Shiki** syntax highlighting and **Mermaid** diagrams rendered at build time
+- **Departure Mono** + **Newsreader**, a single retro-blue accent, warm paper theme
+- Auto-generated **Open Graph cards** (`scripts/generate-og.mjs`), **RSS** (`/rss.xml`), and **sitemap**
+- A thin **Cloudflare Worker** (`src/worker.js`) that 301-redirects `www` → apex
 
 ## Develop
 
 ```sh
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # output to dist/
+npm run build    # generates OG cards, then builds to dist/
 npm run preview  # serve the build locally
 ```
 
 ## Writing a post
 
-Add a Markdown file to `src/content/blog/`. The filename becomes the URL slug
-(`my-post.md` → `/my-post/`). Frontmatter:
+Add a Markdown (or MDX) file to `src/content/blog/`. The filename becomes the
+URL slug (`my-post.md` → `/my-post/`). Frontmatter:
 
 ```yaml
 ---
@@ -36,24 +42,18 @@ draft: false              # optional; drafts are excluded from build
 ---
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers)
 
-1. Push this repo to GitHub.
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**.
-3. Build settings:
-   - **Framework preset:** Astro
-   - **Build command:** `npm run build`
-   - **Output directory:** `dist`
-4. Add your custom domain under the project's **Custom domains** tab.
+Deployment uses [Wrangler](https://developers.cloudflare.com/workers/wrangler/);
+config lives in `wrangler.jsonc`.
 
-Every push to `main` redeploys automatically.
+```sh
+npm run deploy   # npm run build && wrangler deploy
+```
 
-## Before going live
-
-- Set your real domain in `astro.config.mjs` (`SITE`) and `public/robots.txt`.
-- Update social handles / links in `src/consts.ts` and `src/pages/about.astro`.
-- Add an `public/og-default.png` (1200×630) for link previews, or wire up
-  per-post OG image generation.
+The build is served from Cloudflare Static Assets with `src/worker.js` in front.
+Routes (apex + `www`) are bound in `wrangler.jsonc` and require `vinibrasil.com`
+to be an active zone in the Cloudflare account.
 
 ## Fonts
 
