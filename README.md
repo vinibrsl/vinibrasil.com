@@ -15,6 +15,7 @@ Live at **[vinibrasil.com](https://vinibrasil.com)**.
 - **Shiki** syntax highlighting and **Mermaid** diagrams rendered at build time
 - **Departure Mono** + **Newsreader**, a single retro-blue accent, warm paper theme
 - Auto-generated **Open Graph cards** (`scripts/generate-og.mjs`), **RSS** (`/rss.xml`), and **sitemap**
+- **LLM-ready**: an [`/llms.txt`](https://llmstxt.org) index, `/llms-full.txt`, and a clean Markdown twin of every post at `/<slug>.md` (see `src/lib/posts.ts`)
 - A thin **Cloudflare Worker** (`src/worker.js`) that 301-redirects `www` → apex
 
 ## Develop

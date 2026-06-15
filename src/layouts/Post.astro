@@ -20,6 +20,7 @@ const { title, description, pubDate, updatedDate } = post.data;
   updatedTime={updatedDate}
   image={`/og/${post.id}.png`}
   imageAlt={`${title} — ${SITE_TITLE}`}
+  markdown={`/${post.id}.md`}
 >
   <article class="post">
     <header class="post-header">

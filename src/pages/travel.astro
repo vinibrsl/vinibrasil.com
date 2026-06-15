@@ -1,230 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
 import Figure from "../components/Figure.astro";
-
-/**
- * Travel log, grouped by year (newest first). Each entry is a place — a city
- * or region — with the country shown beneath, plus an optional one-line note.
- * To log a trip, add it to the right year's `places` array.
- */
-type Place = {
-  place: string;
-  country: string;
-  note?: string;
-  image?: { src: string; alt: string; caption?: string };
-};
-type Year = { year: string; places: Place[] };
-
-const years: Year[] = [
-  {
-    year: "2026",
-    places: [
-      { place: "Zion National Park", country: "USA" },
-      { place: "Springdale", country: "USA" },
-      { place: "Las Vegas", country: "USA" },
-      { place: "Berkeley", country: "USA" },
-      {
-        place: "San Francisco",
-        country: "USA",
-        image: {
-          src: "https://images.unsplash.com/photo-1757078824095-5fcb9811c307?q=80&w=1973&auto=format&fit=crop",
-          alt: "The beautiful Golden Gate Bridge",
-        },
-      },
-      {
-        place: "Paris",
-        country: "France",
-        image: {
-          src: "https://images.unsplash.com/photo-1769374343053-9a7a3a6d0c6c?q=80&w=2070&auto=format&fit=crop",
-          alt: "Eiffel Tower during the evening",
-        },
-      },
-      { place: "Lyon", country: "France" },
-      { place: "Villeurbanne", country: "France" },
-      { place: "Brussels", country: "Belgium" },
-      { place: "Bruges", country: "Belgium" },
-      { place: "Kilkenny", country: "Ireland" },
-    ],
-  },
-  {
-    year: "2025",
-    places: [
-      { place: "Kilkenny", country: "Ireland" },
-      {
-        place: "New York",
-        country: "USA",
-        image: {
-          src: "https://images.unsplash.com/photo-1744217430029-44c8aebd5412?q=80&w=1975&auto=format&fit=crop",
-          alt: "Walking Manhattan streets with my coworkers",
-        },
-      },
-      { place: "San Francisco", country: "USA" },
-      { place: "Santa Monica", country: "USA" },
-      { place: "Los Angeles", country: "USA" },
-      { place: "Houston", country: "USA" },
-      { place: "Miyajima", country: "Japan" },
-      {
-        place: "Hiroshima",
-        country: "Japan",
-        image: {
-          src: "https://images.unsplash.com/photo-1762194473426-105cab48db65?q=80&w=1926&auto=format&fit=crop",
-          alt: "Kids at Hiroshima Ground Zero",
-        },
-      },
-      { place: "Osaka", country: "Japan" },
-      { place: "Nara", country: "Japan" },
-      {
-        place: "Kyoto",
-        country: "Japan",
-        image: {
-          src: "https://images.unsplash.com/photo-1762698092939-a9caa55db2f8?q=80&w=2070&auto=format&fit=crop",
-          alt: "Schoolers having lunch in Kyoto ",
-        },
-      },
-      { place: "Hakone", country: "Japan" },
-      {
-        place: "Tokyo",
-        country: "Japan",
-        image: {
-          src: "https://images.unsplash.com/photo-1759802339353-47c1ee3cceac?q=80&w=1974&auto=format&fit=crop",
-          alt: "The bustling streets of Akihabara",
-        },
-      },
-      { place: "Santa Cruz", country: "USA" },
-      { place: "Half Moon Bay", country: "USA" },
-      { place: "Walnut Creek", country: "USA" },
-      { place: "Mountain View", country: "USA" },
-      { place: "Colônia Witmarsum", country: "Brazil" },
-      { place: "Ponta Grossa", country: "Brazil" },
-      { place: "Rio de Janeiro", country: "Brazil" },
-      { place: "Bombinhas", country: "Brazil" },
-      { place: "Miami", country: "USA" },
-      { place: "Chicago", country: "USA" },
-      { place: "St. Paul", country: "USA" },
-      { place: "Minneapolis", country: "USA" },
-      { place: "Washington, D.C.", country: "USA" },
-    ],
-  },
-  {
-    year: "2024",
-    places: [
-      {
-        place: "New York",
-        country: "USA",
-        image: {
-          src: "https://images.unsplash.com/photo-1704227905896-369e31f0f548?q=80&w=2070&auto=format&fit=crop",
-          alt: "I couldn't miss this shot while waiting in line for Joe's Pizza in NYC",
-        },
-      },
-      { place: "Porto", country: "Portugal" },
-      { place: "Amsterdam", country: "Netherlands" },
-      { place: "Kilkenny", country: "Ireland" },
-      { place: "Dublin", country: "Ireland" },
-      {
-        place: "Vancouver",
-        country: "Canada",
-        image: {
-          src: "https://images.unsplash.com/photo-1720810942965-072e38c6f5c0?q=80&w=2071&auto=format&fit=crop",
-          alt: "A man looking at the sea in West Vancouver",
-        },
-      },
-      { place: "Toronto", country: "Canada" },
-      { place: "Montreal", country: "Canada" },
-      {
-        place: "San Pedro de Atacama",
-        country: "Chile",
-        image: {
-          src: "https://images.unsplash.com/photo-1710422355256-b720e951bb23?q=80&w=2070&auto=format&fit=crop",
-          alt: "Flamingos in the driest desert in the world: Atacama",
-        },
-      },
-      { place: "Santiago", country: "Chile" },
-      { place: "Arlington", country: "USA" },
-      { place: "Washington, D.C.", country: "USA" },
-      {
-        place: "Philadelphia",
-        country: "USA",
-        image: {
-          src: "https://images.unsplash.com/photo-1704252097045-a3dfcea4185c?q=80&w=2070&auto=format&fit=crop",
-          alt: "Mummers Parade in Philadelphia (P.S.: we didn't know there was a parede going on)",
-        },
-      },
-    ],
-  },
-  {
-    year: "2023",
-    places: [
-      { place: "Jersey City", country: "USA" },
-      { place: "Hoboken", country: "USA" },
-      { place: "New York", country: "USA" },
-      { place: "Dublin", country: "Ireland" },
-      { place: "Londonderry", country: "Northern Ireland" },
-      { place: "Belfast", country: "Northern Ireland" },
-      { place: "Kearny", country: "USA" },
-      { place: "Kilkenny", country: "Ireland" },
-      { place: "London", country: "England" },
-      { place: "Dubrovnik", country: "Croatia" },
-      { place: "Split", country: "Croatia" },
-      { place: "Zagreb", country: "Croatia" },
-      { place: "Cascais", country: "Portugal" },
-      { place: "Sintra", country: "Portugal" },
-      { place: "Lisbon", country: "Portugal" },
-      { place: "Rio de Janeiro", country: "Brazil" },
-      { place: "Aracaju", country: "Brazil" },
-      { place: "João Pessoa", country: "Brazil" },
-      { place: "São Paulo", country: "Brazil" },
-      { place: "São Luiz do Purunã", country: "Brazil" },
-      { place: "Joinville", country: "Brazil" },
-    ],
-  },
-  {
-    year: "2022",
-    places: [
-      { place: "Vienna", country: "Austria" },
-      { place: "Venice", country: "Italy" },
-      { place: "Florence", country: "Italy" },
-      { place: "Vatican City", country: "Vatican City" },
-      { place: "Rome", country: "Italy" },
-      { place: "Whistler", country: "Canada" },
-      { place: "Victoria", country: "Canada" },
-      { place: "Vancouver", country: "Canada" },
-      { place: "Calgary", country: "Canada" },
-      { place: "Banff National Park", country: "Canada" },
-      { place: "Ribeirão Claro", country: "Brazil" },
-      { place: "Foz do Iguaçu", country: "Brazil" },
-      { place: "Buenos Aires", country: "Argentina" },
-      { place: "London", country: "England" },
-      { place: "Protaras", country: "Cyprus" },
-      { place: "Paphos", country: "Cyprus" },
-      { place: "Limassol", country: "Cyprus" },
-      { place: "Ayia Napa", country: "Cyprus" },
-      { place: "Limerick", country: "Ireland" },
-      { place: "Galway", country: "Ireland" },
-      { place: "Dublin", country: "Ireland" },
-      { place: "Cork", country: "Ireland" },
-      { place: "Cobh", country: "Ireland" },
-      { place: "Miami", country: "USA" },
-      { place: "Orlando", country: "USA" },
-    ],
-  },
-  {
-    year: "2021",
-    places: [
-      { place: "Punta Cana", country: "Dominican Republic" },
-      { place: "Brasília", country: "Brazil" },
-      { place: "Carambeí", country: "Brazil" },
-      { place: "Natal", country: "Brazil" },
-      { place: "Rio de Janeiro", country: "Brazil" },
-      { place: "Morretes", country: "Brazil" },
-      { place: "Foz do Iguaçu", country: "Brazil" },
-    ],
-  },
-];
+import {
+  travelYears,
+  TRAVEL_TITLE,
+  TRAVEL_DESCRIPTION,
+} from "../lib/travel";
 
 // Flatten the years into one chronological stream for the timeline. Each entry
 // carries its year, shown only when it changes so the rail isn't a wall of
 // repeated years.
-const entries = years.flatMap((y) =>
+const entries = travelYears.flatMap((y) =>
   y.places.map((p, i) => ({
     ...p,
     year: y.year,
@@ -234,8 +20,9 @@ const entries = years.flatMap((y) =>
 ---
 
 <Base
-  title="Travel"
-  description="Places I've been, logged by year."
+  title={TRAVEL_TITLE}
+  description={TRAVEL_DESCRIPTION}
+  markdown="/travel.md"
 >
   <article class="post">
     <header class="post-header">

@@ -13,6 +13,9 @@ interface Props {
   updatedTime?: Date;
   image?: string;
   imageAlt?: string;
+  // Path to a Markdown twin of this page (e.g. "/my-post.md"), exposed to
+  // LLMs and agents via a rel="alternate" link.
+  markdown?: string;
 }
 
 const {
@@ -24,6 +27,7 @@ const {
   // Branded card generated at build time by scripts/generate-og.mjs.
   image = "/og/default.png",
   imageAlt,
+  markdown,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -148,6 +152,14 @@ const jsonLd: Record<string, unknown> = {
   type="font/woff2"
   crossorigin
 />
+
+<!-- Markdown twin + llms.txt: clean, layout-free copies for LLMs/agents -->
+{
+  markdown && (
+    <link rel="alternate" type="text/markdown" href={markdown} title={fullTitle} />
+  )
+}
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
 
 <!-- RSS autodiscovery -->
 <link
