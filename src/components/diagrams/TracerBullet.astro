@@ -1,0 +1,287 @@
+---
+// The tracer bullet, the way The Pragmatic Programmer draws it. The stack is a
+// row of layers — UI, authorization, business logic, data model, database —
+// each one mostly a "not yet implemented" squiggle. The tracer bullet is the
+// arrow that fires diagonally through ALL of them at once, leaving a thin,
+// solid, working slice where it crosses each layer. That single shot proves
+// the whole path works end-to-end before any layer is filled in. The diagram
+// IS that idea: integration first, breadth over depth.
+//
+// Same DRY contract as every diagram (see BookLLM.astro): layout comes from
+// the shared .diagram base in global.css; this file owns only what's unique.
+// The geometry is COMPUTED here at build time — change `layers` or the frame
+// constants and it redraws. Pure SVG + CSS, zero client JS, reduced-motion
+// still frame (the canonical static picture: arrow through every layer).
+
+const layers = [
+  "USER INTERFACE",
+  "AUTHORIZATION",
+  "BUSINESS LOGIC",
+  "DATA MODEL",
+  "DATABASE",
+];
+
+// the system frame and the columns inside it
+const FX = 64;
+const FY = 70;
+const FW = 600;
+const FH = 300;
+const innerPad = 34;
+const cw = 58;
+const n = layers.length;
+const gap = (FW - 2 * innerPad - n * cw) / (n - 1);
+const colTop = FY + 24;
+const colH = FH - 48;
+const colBottom = colTop + colH;
+
+// the tracer's flight path: low on the left, climbing through to the right
+const ax0 = FX - 22;
+const ay0 = colTop + colH * 0.66;
+const ax1 = FX + FW + 34;
+const ay1 = colTop + colH * 0.3;
+const arrowY = (x) => ay0 + ((ay1 - ay0) * (x - ax0)) / (ax1 - ax0);
+
+const sliceH = 58;
+const cols = layers.map((label, i) => {
+  const x = FX + innerPad + i * (cw + gap);
+  const cx = x + cw / 2;
+  const sy = arrowY(cx); // where the bullet crosses this layer
+  const frac = (cx - ax0) / (ax1 - ax0); // how far along the flight that is
+  return { label, x, cx, sy, frac };
+});
+
+// arrowhead at the end of the flight; the shaft stops just short of it
+const dx = ax1 - ax0;
+const dy = ay1 - ay0;
+const L = Math.hypot(dx, dy);
+const ux = dx / L;
+const uy = dy / L;
+const bX = ax1 - ux * 20; // shaft endpoint (base of the head)
+const bY = ay1 - uy * 20;
+const head = [
+  `${ax1.toFixed(1)},${ay1.toFixed(1)}`,
+  `${(bX - uy * 11).toFixed(1)},${(bY + ux * 11).toFixed(1)}`,
+  `${(bX + uy * 11).toFixed(1)},${(bY - ux * 11).toFixed(1)}`,
+].join(" ");
+
+const flight = `M ${ax0.toFixed(1)} ${ay0.toFixed(1)} L ${ax1.toFixed(1)} ${ay1.toFixed(1)}`;
+
+// a vertical "not yet implemented" squiggle that fills a column
+const vWave = (cx, y0, y1, amp, lam) => {
+  let d = "";
+  for (let y = y0; y <= y1; y += 3) {
+    const x = cx + amp * Math.sin((2 * Math.PI * (y - y0)) / lam);
+    d += (d ? "L" : "M") + `${x.toFixed(1)} ${y.toFixed(1)} `;
+  }
+  return d.trim();
+};
+// the small squiggle in the legend swatch
+const hWave = (x0, x1, yc, amp, lam) => {
+  let d = "";
+  for (let x = x0; x <= x1; x += 2) {
+    const y = yc + amp * Math.sin((2 * Math.PI * (x - x0)) / lam);
+    d += (d ? "L" : "M") + `${x.toFixed(1)} ${y.toFixed(1)} `;
+  }
+  return d.trim();
+};
+
+// the bullet reaches each layer at this fraction of the loop (it flies across
+// during the first ~82% of the cycle); used to time each slice's flare
+const FLY = 0.82;
+const D = 4.6; // loop seconds
+---
+
+<svg
+  class="tb diagram"
+  viewBox="0 0 760 500"
+  role="img"
+  aria-labelledby="tb-title tb-desc"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title id="tb-title">A tracer bullet fired through every layer of the stack</title>
+  <desc id="tb-desc">
+    Five stacked layers — user interface, authorization, business logic, data
+    model, and database — each mostly filled with a "not yet implemented"
+    squiggle. A single arrow, the tracer bullet, passes diagonally through all
+    of them, leaving a thin solid implemented slice in each layer: the smallest
+    end-to-end path that proves the whole system works.
+  </desc>
+
+  <!-- legend -->
+  <g class="legend">
+    <rect class="swatch" x={FX} y="30" width="46" height="22" rx="2"></rect>
+    <path class="squiggle" d={hWave(FX + 5, FX + 41, 41, 5, 9)} fill="none"></path>
+    <text class="lab note" x={FX + 56} y="46">NOT YET IMPLEMENTED</text>
+  </g>
+
+  <!-- the system -->
+  <rect class="frame" x={FX} y={FY} width={FW} height={FH} rx="3"></rect>
+
+  <!-- layers, each a column of "not yet implemented" with a working slice -->
+  {
+    cols.map((c) => (
+      <g class="layer">
+        <rect class="col" x={c.x.toFixed(1)} y={colTop} width={cw} height={colH} rx="4" />
+        <path class="squiggle" d={vWave(c.cx, colTop + 6, colBottom - 6, 22, 26)} fill="none" />
+        <rect class="slice-bg" x={c.x.toFixed(1)} y={(c.sy - sliceH / 2).toFixed(1)} width={cw} height={sliceH} />
+        <rect
+          class="slice"
+          x={c.x.toFixed(1)}
+          y={(c.sy - sliceH / 2).toFixed(1)}
+          width={cw}
+          height={sliceH}
+          style={`animation-delay:${(c.frac * FLY * D).toFixed(2)}s`}
+        />
+        <text
+          class="lab name"
+          x={c.cx.toFixed(1)}
+          y={(FY + FH + 22).toFixed(1)}
+          text-anchor="end"
+          transform={`rotate(-32 ${c.cx.toFixed(1)} ${(FY + FH + 22).toFixed(1)})`}
+        >
+          {c.label}
+        </text>
+      </g>
+    ))
+  }
+
+  <!-- the tracer bullet: one shot through the whole stack -->
+  <line class="flight-halo" x1={ax0.toFixed(1)} y1={ay0.toFixed(1)} x2={bX.toFixed(1)} y2={bY.toFixed(1)}></line>
+  <line class="flight" x1={ax0.toFixed(1)} y1={ay0.toFixed(1)} x2={bX.toFixed(1)} y2={bY.toFixed(1)}></line>
+  <polygon class="flight-head" points={head}></polygon>
+  <circle class="bullet" r="5" style={`offset-path:path('${flight}')`}></circle>
+</svg>
+
+<style>
+  .tb {
+    max-width: 620px;
+  }
+
+  .tb .frame {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-opacity: 0.55;
+  }
+
+  /* a layer that's mostly unbuilt */
+  .tb .col {
+    fill: var(--accent);
+    fill-opacity: 0.05;
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-opacity: 0.4;
+  }
+  .tb .squiggle {
+    stroke: var(--muted);
+    stroke-width: 2;
+    stroke-opacity: 0.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* the working slice the bullet carved: opaque bg masks the squiggle, then a
+     solid accent fill marks it implemented */
+  .tb .slice-bg {
+    fill: var(--bg);
+  }
+  .tb .slice {
+    fill: var(--accent);
+    fill-opacity: 0.85;
+    stroke: var(--accent);
+    stroke-width: 1.2;
+    stroke-dasharray: 2 3;
+    animation: tb-flare 4.6s ease-out infinite;
+  }
+
+  /* the tracer */
+  .tb .flight-halo {
+    stroke: var(--bg);
+    stroke-width: 9;
+    stroke-linecap: round;
+  }
+  .tb .flight {
+    stroke: var(--accent);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-opacity: 0.85;
+  }
+  .tb .flight-head {
+    fill: var(--accent);
+    fill-opacity: 0.85;
+  }
+  .tb .bullet {
+    fill: var(--accent);
+    offset-rotate: 0deg;
+    animation: tb-fire 4.6s ease-in infinite;
+  }
+
+  /* labels */
+  .tb .lab {
+    font-family: var(--font-mark, monospace);
+    fill: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .tb .lab.name {
+    font-size: 13px;
+    fill: var(--accent);
+  }
+  .tb .lab.note {
+    font-size: 13px;
+    dominant-baseline: middle;
+  }
+  .tb .swatch {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1.2;
+    stroke-opacity: 0.6;
+  }
+
+  /* the bullet streaks across the flight path once per loop */
+  @keyframes tb-fire {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    6% {
+      opacity: 1;
+    }
+    82% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+    90%,
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+  /* each slice flares bright as the bullet passes, then settles to implemented */
+  @keyframes tb-flare {
+    0%,
+    100% {
+      fill-opacity: 0.85;
+    }
+    2% {
+      fill-opacity: 1;
+      stroke-opacity: 1;
+    }
+    10% {
+      fill-opacity: 0.85;
+    }
+  }
+
+  /* resting state: the canonical still picture — the bullet caught mid-flight,
+     a working slice through every layer. */
+  @media (prefers-reduced-motion: reduce) {
+    .tb .slice {
+      animation: none;
+      fill-opacity: 0.85;
+    }
+    .tb .bullet {
+      animation: none;
+      offset-distance: 62%;
+      opacity: 1;
+    }
+  }
+</style>

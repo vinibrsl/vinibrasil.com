@@ -1,0 +1,28 @@
+---
+import { SITE_TITLE } from "../consts";
+const bornYear = 1999;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-asterism" aria-hidden="true">* * *</div>
+  <p class="footer-name">{SITE_TITLE}</p>
+  <p class="footer-prose">
+    you can find me on <a
+      href="https://github.com/vinibrsl"
+      target="_blank"
+      rel="me noopener">github</a
+    >, <a
+      href="https://www.linkedin.com/in/vinicius-brasil/"
+      target="_blank"
+      rel="me noopener">linkedin</a
+    >, and <a href="https://unsplash.com/@vinib" target="_blank" rel="me noopener"
+      >unsplash</a
+    > (where i post the occasional photo), or just <a href="mailto:vini@hey.com"
+      >email me</a
+    >. and if you&rsquo;re old-school, the blog has an <a href="/rss.xml"
+      >rss feed</a
+    >.
+  </p>
+  <p class="footer-copy">© {bornYear}&ndash;{year}</p>
+</footer>

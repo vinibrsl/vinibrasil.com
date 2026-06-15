@@ -1,0 +1,845 @@
+/* ──────────────────────────────────────────────────────────────
+   vinibrsl blog — design system
+
+   Editorial-meets-terminal. Two voices:
+   · Newsreader (serif) — headlines + body. The content's voice.
+   · Departure Mono (pixel) — the "technical chrome": wordmark, nav,
+     eyebrows, dates, labels. Small, uppercase, letter-spaced.
+   Warm paper background, a single retro-blue accent.
+   ────────────────────────────────────────────────────────────── */
+
+/* Newsreader — variable, roman + italic. Carries headings and body. */
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/Newsreader-Roman.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/Newsreader-Italic.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Departure Mono — pixel display, for chrome and labels only. */
+@font-face {
+  font-family: "Departure Mono";
+  src: url("/fonts/DepartureMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* type */
+  --font-mark: "Departure Mono", ui-monospace, Menlo, monospace;
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-code: "Departure Mono", ui-monospace, "SFMono-Regular", "SF Mono",
+    Menlo, Consolas, monospace;
+
+  /* paper (light) palette */
+  --bg: #f4f1ea;
+  --bg-soft: #ebe6db;
+  --fg: #1c1b18;
+  --fg-soft: #423f38;
+  --muted: #847f72;
+  --accent: #2a4fd6; /* retro blue */
+  --accent-soft: #2a4fd61a;
+  --border: #ddd7c9;
+
+  /* metrics */
+  --measure: 38rem; /* ~66 characters of Newsreader */
+  --pad: clamp(1.25rem, 5vw, 2rem);
+
+  /* optical niceties */
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-serif);
+  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.1875rem);
+  font-weight: 420;
+  line-height: 1.62;
+  font-feature-settings: "kern", "liga", "onum" 1; /* old-style figures */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 var(--pad);
+}
+
+body > * {
+  width: 100%;
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* ── the technical-label register (Departure Mono) ───────────────
+   One class, used everywhere a small pixel label appears. */
+.label {
+  font-family: var(--font-mark);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-feature-settings: normal;
+}
+
+/* ── headings (Newsreader) ───────────────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+  font-weight: 560;
+  line-height: 1.12;
+  letter-spacing: -0.018em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2rem, 1.3rem + 3vw, 2.9rem);
+  margin: 0;
+}
+h2 {
+  font-size: clamp(1.4rem, 1.2rem + 1vw, 1.7rem);
+  margin: 2.75rem 0 0.6rem;
+}
+h3 {
+  font-size: 1.25rem;
+  margin: 2rem 0 0.4rem;
+}
+
+/* section / page titles (Reading, Travel, 404) — same serif headline voice
+   as post article titles (see h1): the regular face, dark ink. Inherits the
+   h1 size clamp; nothing else to set. */
+.page-title {
+  font-family: var(--font-serif);
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+/* ── links ───────────────────────────────────────────────────── */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.post-body a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--accent-soft);
+  transition: text-decoration-color 0.15s ease;
+}
+.post-body a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* ── header ──────────────────────────────────────────────────────
+   The masthead. A blue all-caps wordmark trailed by a terminal cursor
+   block, with a drafting dimension rule (ticked at both ends, like
+   .section-label) closing it off. Nav sits to the right. */
+.site-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  flex-wrap: wrap;
+  padding: 2.25rem 0 1rem;
+  margin-bottom: 3rem;
+  /* the ticked drafting rule that closes the masthead: a baseline, two tall
+     end ticks, and a measured scale of minor ticks running between them */
+  border-bottom: 1px solid var(--border);
+  background-image:
+    linear-gradient(var(--border), var(--border)),
+    linear-gradient(var(--border), var(--border)),
+    repeating-linear-gradient(
+      to right,
+      var(--border) 0 1px,
+      transparent 1px 22px
+    );
+  background-repeat: no-repeat;
+  background-size:
+    1px 7px,
+    1px 7px,
+    100% 4px;
+  background-position:
+    left bottom,
+    right bottom,
+    left bottom;
+}
+.site-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  font-family: var(--font-mark);
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  line-height: 1;
+}
+/* a steady terminal cursor block after the name */
+.site-title-cursor {
+  width: 0.5em;
+  height: 0.9em;
+  background: var(--accent);
+  animation: cursor-blink 1.2s steps(1) infinite;
+}
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.site-title:hover {
+  color: var(--fg);
+}
+.site-title:hover .site-title-cursor {
+  background: var(--fg);
+}
+.site-header nav {
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 0.2rem;
+}
+.site-header nav a {
+  font-family: var(--font-mark);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.site-header nav a.active,
+.site-header nav a:hover {
+  color: var(--accent);
+}
+
+main {
+  flex: 1;
+}
+
+/* ── footer ────────────────────────────────────────────────────────
+   A quiet editorial colophon: an asterism break, the name, and a plain
+   spoken sentence with the links woven in. Centered, mostly serif. */
+.site-footer {
+  margin-top: 5rem;
+  padding: 0 0 3rem;
+  text-align: center;
+}
+.footer-asterism {
+  margin-bottom: 2.5rem;
+  font-family: var(--font-mark);
+  font-size: 1rem;
+  letter-spacing: 0.6em;
+  text-indent: 0.6em; /* offset the trailing letter-spacing, keep it centered */
+  color: var(--muted);
+}
+.footer-name {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mark);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.footer-prose {
+  max-width: 30rem;
+  margin: 0 auto;
+  font-family: var(--font-mark);
+  font-size: 0.78rem;
+  line-height: 1.85;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-wrap: pretty;
+  font-feature-settings: normal;
+}
+.footer-prose a {
+  color: var(--fg-soft);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: var(--border);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.footer-prose a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+.footer-copy {
+  margin: 1.5rem 0 0;
+  font-family: var(--font-mark);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-feature-settings: normal;
+}
+
+/* ── home ──────────────────────────────────────────────────────────
+   A warm one-line intro, then a plain list of posts. The header chrome
+   carries the retro/terminal/blueprint register; the body stays quiet. */
+.intro {
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--fg-soft);
+  margin: 0 0 3.5rem;
+  max-width: 34rem;
+  text-wrap: pretty;
+}
+.intro em {
+  color: var(--fg);
+}
+
+/* the post list — a plain list: serif title, mono date */
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.entries li a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+}
+.entry-title {
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: color 0.15s ease;
+}
+.entries li a:hover .entry-title {
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ── post ────────────────────────────────────────────────────── */
+.post-header {
+  margin-bottom: 1.5rem;
+}
+.post-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.post-header h1 {
+  margin-bottom: 0.6rem;
+}
+/* post body rhythm */
+.post-body {
+  margin-top: 1.5rem;
+}
+.post-body > * + * {
+  margin-top: 1.5rem;
+}
+.post-body > h2 + *,
+.post-body > h3 + * {
+  margin-top: 0.6rem;
+}
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+/* technical figure (see rehypeFigures in astro.config.mjs) */
+.post-body .fig {
+  margin: 2.75rem 0;
+  border: 1px solid var(--border);
+}
+.post-body .fig img {
+  border-bottom: 1px solid var(--border);
+}
+.fig-cap {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-mark);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fig-num {
+  color: var(--accent);
+  margin-right: 0.5rem;
+}
+
+/* ── diagrams (components/diagrams/*.astro) ──────────────────────────
+   Shared base for every hand-drawn SVG diagram/animation. The ONE place
+   that owns the common concern — centered, responsive, frameless layout —
+   so each diagram component only carries what's unique to it (its shapes,
+   its scoped animation, its reduced-motion still frame, its a11y text).
+   Frameless by design: no border, no caption. A diagram sizes itself by
+   setting --diagram-max; everything else is inherited. */
+.post-body .diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: var(--diagram-max, 520px);
+  margin: 2.5rem auto;
+}
+
+/* embedded media (e.g. a YouTube iframe) — framed like a figure, with a
+   responsive 16:9 box and the same caption tab as .fig */
+.post-body .embed {
+  margin: 2.75rem 0;
+  border: 1px solid var(--border);
+}
+.post-body .embed-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--border);
+}
+.post-body .embed-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* ── mermaid diagrams (build-time inline SVG; see astro.config.mjs) ──
+   The config renders with the plain 'neutral' theme; ALL palette styling
+   lives here. Mermaid inlines its own scoped <style> and presentation
+   attributes, so colours/fonts are forced with !important — this one block
+   is the single source of truth, and works for every diagram type.
+   Blueprint look: paper-filled boxes, blue outlines + connectors. */
+.post-body svg[id^="mermaid-"] {
+  display: block;
+  /* mermaid caps the svg at its natural px width inline; override so the
+     diagram (and the blueprint bg painted on it) fills the column. */
+  width: 100%;
+  max-width: none !important;
+  height: auto;
+  margin: 2.75rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='1' height='1' fill='%232a4fd6' fill-opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 0.2rem 0.2rem;
+}
+/* all text → the mono "chrome" face, dark ink, uppercased like the site's
+   labels (monospace layout means uppercasing won't shift widths) */
+.post-body svg[id^="mermaid-"] text,
+.post-body svg[id^="mermaid-"] tspan,
+.post-body svg[id^="mermaid-"] .nodeLabel,
+.post-body svg[id^="mermaid-"] .edgeLabel {
+  font-family: var(--font-code) !important;
+  fill: var(--fg) !important;
+  color: var(--fg) !important;
+  text-transform: uppercase !important;
+}
+/* Mermaid anchors flowchart labels to the top-left of their foreignObject: a
+   single-line label is a shrink-to-fit `display: table-cell` (drifts left), and
+   a label Mermaid wrapped at build can re-flow to one line at display, leaving
+   it stranded at the top of a box sized for two. Make the label div fill the
+   whole foreignObject (which Mermaid already centres on the node) and centre its
+   content on both axes — so the text sits dead-centre however many lines it
+   ends up on; any overflow then spills symmetrically. The build renders with the
+   display font (see astro.config.mjs) so the boxes are sized right; this only
+   fixes the anchoring. */
+.post-body svg[id^="mermaid-"] foreignObject > div {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+}
+/* boxes (flowchart nodes, sequence actors, notes) → light blue + blue outline */
+.post-body svg[id^="mermaid-"] .node rect,
+.post-body svg[id^="mermaid-"] .node polygon,
+.post-body svg[id^="mermaid-"] .node circle,
+.post-body svg[id^="mermaid-"] .node path,
+.post-body svg[id^="mermaid-"] rect.actor,
+.post-body svg[id^="mermaid-"] .note {
+  fill: #e8edfc !important; /* light tint of --accent */
+  stroke: var(--accent) !important;
+}
+/* connectors (edges, message arrows) → blueprint blue */
+.post-body svg[id^="mermaid-"] .edgePath .path,
+.post-body svg[id^="mermaid-"] .flowchart-link,
+.post-body svg[id^="mermaid-"] .messageLine0,
+.post-body svg[id^="mermaid-"] .messageLine1,
+.post-body svg[id^="mermaid-"] .marker,
+.post-body svg[id^="mermaid-"] marker path {
+  stroke: var(--accent) !important;
+  fill: var(--accent) !important;
+}
+/* the marker FILL should be blue but message lines must stay unfilled */
+.post-body svg[id^="mermaid-"] .messageLine0,
+.post-body svg[id^="mermaid-"] .messageLine1,
+.post-body svg[id^="mermaid-"] .flowchart-link {
+  fill: none !important;
+}
+/* faint sequence lifelines; edge labels sit on the paper, no coloured chip */
+.post-body svg[id^="mermaid-"] .actor-line {
+  stroke: var(--muted) !important;
+}
+.post-body svg[id^="mermaid-"] .edgeLabel rect,
+.post-body svg[id^="mermaid-"] .labelBkg {
+  fill: var(--bg-soft) !important;
+  background: var(--bg-soft) !important;
+}
+
+/* ── annotation / callout ─────────────────────────────────────────
+   Drop into a post as raw HTML:
+     <aside class="note">…</aside>                 (labelled NOTE)
+     <aside class="note" data-label="WARNING">…</aside>
+   Add class "margin" to float it into the right gutter on wide screens. */
+.post-body .note {
+  margin: 2.25rem 0;
+  padding: 0.95rem 1.1rem 1rem;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  background: var(--bg-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.post-body .note > :first-child {
+  margin-top: 0;
+}
+.post-body .note > :last-child {
+  margin-bottom: 0;
+}
+.post-body .note::before {
+  content: "NOTE";
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--font-mark);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.post-body .note[data-label]::before {
+  content: attr(data-label);
+}
+@media (min-width: 64rem) {
+  .post-body .note.margin {
+    float: right;
+    clear: right;
+    width: 12rem;
+    margin: 0.3rem 0 1rem;
+    margin-right: calc((12rem + 2.5rem) * -1);
+    background: none;
+    border: none;
+    border-left: 1px solid var(--border);
+    padding: 0 0 0 0.8rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+}
+.post-body blockquote {
+  margin: 2rem 0;
+  padding-left: 1.4rem;
+  border-left: 2px solid var(--accent);
+  font-size: 1.3rem;
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--fg-soft);
+}
+.post-body blockquote p {
+  margin: 0;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.4rem;
+}
+.post-body li + li {
+  margin-top: 0.4rem;
+}
+/* GFM task lists: drop the bullet, align the checkbox */
+.post-body .contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.post-body .task-list-item input {
+  margin-right: 0.5rem;
+  accent-color: var(--accent);
+}
+.post-body hr {
+  border: none;
+  width: 100%;
+  margin: 3rem 0;
+  text-align: center;
+  text-indent: 0.6em; /* offset the trailing letter-spacing, keep it centered */
+}
+.post-body hr::before {
+  content: "* * *";
+  font-family: var(--font-mark);
+  font-size: 1rem;
+  letter-spacing: 0.6em;
+  color: var(--muted);
+}
+
+/* tables read as a small spec sheet */
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.post-body th,
+.post-body td {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+.post-body thead th {
+  font-family: var(--font-mark);
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg-soft);
+}
+.post-body del {
+  color: var(--muted);
+}
+
+/* ── code ──────────────────────────────────────────────────────────
+   Departure Mono throughout. Inline spans read as a small ticketed chip
+   on the paper. Fenced blocks are a flat listing panel that matches the
+   figures/notes/tables — sharp corners, a hairline border. Monochrome
+   ink varied by weight of grey, from the Shiki theme in astro.config. */
+code {
+  font-family: var(--font-code);
+  font-size: 0.82em;
+  font-feature-settings: normal;
+}
+/* inline code reads as a small ticketed chip */
+:not(pre) > code {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  padding: 0.05em 0.36em;
+  border-radius: 2px;
+}
+
+/* the listing panel — flat, keyed to the paper palette so it reads as part
+   of the document, exactly like the figures/notes/tables */
+pre.astro-code {
+  position: relative;
+  margin-inline: 0;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  padding: 1.75rem 1.35rem 1.4rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+/* the language as a small mono readout in the corner */
+pre.astro-code::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.65rem;
+  font-family: var(--font-mark);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+pre.astro-code code {
+  font-size: inherit;
+}
+
+/* ── accessibility ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* Blanket safety net: nothing moves when motion is reduced, even if a
+   component forgets to opt out. This kills the running animation but NOT
+   layout — a diagram whose meaning depends on where its parts come to rest
+   should ALSO declare a still frame in its own scoped
+   @media (prefers-reduced-motion: reduce) block (see diagrams/BookLLM.astro),
+   since offset/transform/opacity aren't animation properties this rule can
+   reach. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ── reading list ──────────────────────────────────────────────────
+   Books grouped by year. A pixel-label year header (the technical
+   register), then a dense one-line-per-book list: serif title on the
+   left, author in muted mono on the right. Kept compact so a long list
+   scans quickly down the page. */
+.shelf {
+  margin-top: 2.25rem;
+}
+.shelf-status {
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+/* .post-body ul sets a list indent; out-specify it so the shelf sits flush. */
+.post-body .books {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.book {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.book-title {
+  font-family: var(--font-mark);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg);
+  font-feature-settings: normal;
+}
+a.book-title {
+  color: var(--fg);
+  transition: color 0.15s ease;
+}
+a.book-title:hover {
+  color: var(--accent);
+}
+.book-author {
+  font-family: var(--font-mark);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--muted);
+  font-feature-settings: normal;
+}
+/* a personal aside on a book — quiet italic serif, the lone warm voice
+   among the mono catalog lines */
+.book-note {
+  grid-column: 1 / -1;
+  margin: 0.45rem 0 0.15rem;
+  max-width: 34rem;
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+/* ── travel timeline ───────────────────────────────────────────────
+   One chronological stream rather than year buckets. A hairline rail runs
+   down the left; each entry is a tick on it, reading YEAR · PLACE · COUNTRY.
+   The year prints only when it changes, so the rail marks the turn of each
+   year instead of repeating it on every row. */
+.post-body .timeline {
+  list-style: none;
+  margin: 2.25rem 0 0;
+  padding: 0;
+}
+.tl-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0 1.1rem;
+  /* gutter holds the year labels; the rail is the left border at its edge */
+  margin-left: 4rem;
+  padding: 0.4rem 0 0.4rem 1.25rem;
+  border-left: 1px solid var(--border);
+}
+/* the year sits in the left gutter, right-aligned against the rail; printed
+   only at the turn of each year */
+.tl-year {
+  position: absolute;
+  left: -4rem;
+  width: 3.2rem;
+  text-align: right;
+  font-family: var(--font-mark);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  font-feature-settings: normal;
+}
+/* a tick on the rail; a filled accent node at the turn of each year */
+.tl-row::before {
+  content: "";
+  position: absolute;
+  left: -3.5px;
+  top: 0.6rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.tl-row[data-year]::before {
+  background: var(--accent);
+}
+.tl-place {
+  font-family: var(--font-mark);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg);
+  font-feature-settings: normal;
+}
+.tl-country {
+  font-family: var(--font-mark);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--muted);
+  font-feature-settings: normal;
+}
+.tl-note {
+  grid-column: 1 / -1;
+  margin: 0.45rem 0 0.15rem;
+  max-width: 34rem;
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+.post-body .fig.tl-photo {
+  grid-column: 1 / -1;
+  margin: 0.7rem 0 0.3rem;
+}

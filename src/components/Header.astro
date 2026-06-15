@@ -1,0 +1,22 @@
+---
+import { SITE_TITLE, NAV_LINKS } from "../consts";
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header class="site-header">
+  <a href="/" class="site-title">
+    {SITE_TITLE}
+    <span class="site-title-cursor" aria-hidden="true"></span>
+  </a>
+  <nav aria-label="Primary">
+    {
+      NAV_LINKS.map((link) => (
+        <a href={link.href} class:list={[{ active: isActive(link.href) }]}>
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>

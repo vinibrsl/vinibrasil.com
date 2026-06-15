@@ -1,0 +1,362 @@
+---
+// Asking "why" peels back the layers — and every answer is kept. The post's
+// thesis: "We hide old decisions inside new solutions... the loop spins fast
+// enough that we eventually forget the whys," and its payoff: "Every answer
+// you find becomes a tool you keep." So this is an onion of abstraction — the
+// tool you reach for today (HTTP/3) on the outside, each older decision it
+// hides nested within, down to the origin. A "WHY?" probe drills inward along
+// the centre line; as it crosses each layer that layer lights AND STAYS lit,
+// so knowledge accumulates ring by ring until the whole stack is revealed and
+// the core — the first decision everything else was copied forward from —
+// lights last. Then the loop resets and the drill begins again.
+//
+// Same DRY contract as every diagram (see DefenseLayers.astro / TracerBullet.
+// astro): layout comes from the shared .diagram base in global.css; this file
+// owns only what's unique. The geometry AND the per-layer animation timing are
+// COMPUTED here at build time — change `sizes` or the frame constants and it
+// redraws, including each layer's keyframe (it brightens at exactly the % of
+// the loop the probe crosses its edge, then holds, so the reveal accumulates
+// and all layers reset together at the loop boundary). Pure SVG + CSS, zero
+// client JS, with a reduced-motion still frame.
+
+const cx = 380;
+const cy = 250;
+
+// nested layers, outer → inner (newest abstraction → oldest decision)
+const sizes = [
+  { w: 560, h: 300, label: "HTTP/3" },
+  { w: 420, h: 225, label: "HTTP/2" },
+  { w: 280, h: 150, label: "HTTP/1.1" },
+  { w: 140, h: 75, label: "HTTP/0.9" },
+];
+
+const PROBE_X = 700; // probe starts just outside the outer right edge…
+const FLY = 0.8; // …and reaches the core at 80% of the loop
+const D = 5; // loop seconds
+const range = PROBE_X - cx; // horizontal distance the probe travels
+
+// each layer: its rect, plus the % of the loop when the probe pierces its
+// right edge — that's when it lights up and starts accumulating.
+const layers = sizes.map((s) => {
+  const rightEdge = cx + s.w / 2;
+  const frac = (PROBE_X - rightEdge) / range; // 0 (outer) → 1 (core)
+  return {
+    label: s.label,
+    x: cx - s.w / 2,
+    y: cy - s.h / 2,
+    w: s.w,
+    h: s.h,
+    at: frac * FLY * 100, // % into the loop the reveal fires
+  };
+});
+
+const coreAt = FLY * 100; // the origin lights when the probe lands at centre
+
+// Build one keyframe per layer: dim until the probe arrives, a brief flare on
+// arrival, then HOLD revealed to 100% so it stays as the drill continues. All
+// layers share the loop period and start together, so they reset in unison at
+// the boundary — the accumulation replays cleanly every loop.
+const keyframes = layers
+  .map((l, i) => {
+    const a = l.at.toFixed(2);
+    const b = Math.min(l.at + 2, 99).toFixed(2);
+    const c = Math.min(l.at + 7, 99).toFixed(2);
+    return `
+@keyframes aw-ring-${i} {
+  0%, ${a}% { stroke-opacity: .16; fill-opacity: .035; }
+  ${b}% { stroke-opacity: .85; fill-opacity: .15; }
+  ${c}%, 100% { stroke-opacity: .5; fill-opacity: .1; }
+}
+@keyframes aw-label-${i} {
+  0%, ${a}% { fill: var(--muted); }
+  ${b}%, 100% { fill: var(--accent); }
+}
+@keyframes aw-keep-${i} {
+  0%, ${a}% { opacity: 0; transform: scale(0); }
+  ${b}% { opacity: 1; transform: scale(1.4); }
+  ${c}%, 100% { opacity: 1; transform: scale(1); }
+}`;
+  })
+  .join("\n");
+
+const coreKeyframes = `
+@keyframes aw-core {
+  0%, ${coreAt.toFixed(2)}% { opacity: .45; transform: scale(1); }
+  ${(coreAt + 2).toFixed(2)}% { opacity: 1; transform: scale(1.45); }
+  ${(coreAt + 8).toFixed(2)}%, 100% { opacity: 1; transform: scale(1); }
+}`;
+
+// the knowledge meter — one cell per layer, plus the core — that fills as the
+// drill crosses each one. Same `at` timing as the rings, so the gauge and the
+// reveal stay in lockstep: by the time the question reaches the core, every
+// cell is filled. Laid out bottom-left of the frame.
+const marks = [...layers.map((l) => l.at), coreAt];
+const PIP = { y: 454, w: 20, h: 13, gap: 6 };
+const pipRowW = marks.length * PIP.w + (marks.length - 1) * PIP.gap;
+const pipX0 = cx - pipRowW / 2; // centred on the diagram's midline
+const pips = marks.map((at, i) => ({
+  at,
+  x: pipX0 + i * (PIP.w + PIP.gap),
+}));
+
+const pipKeyframes = pips
+  .map((p, i) => {
+    const a = p.at.toFixed(2);
+    const b = Math.min(p.at + 2, 99).toFixed(2);
+    const c = Math.min(p.at + 6, 99).toFixed(2);
+    return `
+@keyframes aw-pip-${i} {
+  0%, ${a}% { fill-opacity: 0; }
+  ${b}% { fill-opacity: .95; }
+  ${c}%, 100% { fill-opacity: .8; }
+}`;
+  })
+  .join("\n");
+---
+
+<svg
+  class="aw diagram"
+  viewBox="0 0 760 500"
+  role="img"
+  aria-labelledby="aw-title aw-desc"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title id="aw-title">Asking why peels back the layers of abstraction</title>
+  <desc id="aw-desc">
+    Four nested rectangles, newest to oldest: HTTP/3 on the outside, then
+    HTTP/2, HTTP/1.1, and HTTP/0.9, with an origin marker at the centre. A
+    probe labelled "why?" drills inward along the middle; each layer lights up
+    as the question reaches it and stays lit, knowledge accumulating ring by
+    ring, until the question arrives at the first decision everything else was
+    copied forward from.
+  </desc>
+
+  <!-- the path the question drills along -->
+  <line class="drill" x1={PROBE_X} y1={cy} x2={cx} y2={cy}></line>
+
+  <!-- nested abstractions; each lights and stays lit as the probe crosses it -->
+  {
+    layers.map((l, i) => (
+      <g class="layer">
+        <rect
+          class="ring"
+          x={l.x.toFixed(1)}
+          y={l.y.toFixed(1)}
+          width={l.w}
+          height={l.h}
+          rx="4"
+          style={`animation-name: aw-ring-${i}`}
+        />
+        <circle
+          class="keep"
+          cx={(l.x + 9).toFixed(1)}
+          cy={(l.y - 11).toFixed(1)}
+          r="3.2"
+          style={`animation-name: aw-keep-${i}; transform-origin: ${(l.x + 9).toFixed(1)}px ${(l.y - 11).toFixed(1)}px`}
+        />
+        <text
+          class="ring-label"
+          x={(l.x + 18).toFixed(1)}
+          y={(l.y - 7).toFixed(1)}
+          style={`animation-name: aw-label-${i}`}
+        >
+          {l.label}
+        </text>
+      </g>
+    ))
+  }
+
+  <!-- the origin: the first why, lit last -->
+  <g class="core" style={`transform-origin: ${cx}px ${cy}px`}>
+    <circle class="core-ring" cx={cx} cy={cy} r="15"></circle>
+    <circle class="core-ring" cx={cx} cy={cy} r="8"></circle>
+    <circle class="core-dot" cx={cx} cy={cy} r="3"></circle>
+  </g>
+
+  <!-- the knowledge meter: fills a cell as each layer is kept -->
+  <g class="meter">
+    <text class="meter-label" x={cx} y={PIP.y - 10} text-anchor="middle">KNOWLEDGE KEPT</text>
+    {
+      pips.map((p, i) => (
+        <g>
+          <rect
+            class="pip-cell"
+            x={p.x}
+            y={PIP.y}
+            width={PIP.w}
+            height={PIP.h}
+            rx="2"
+          />
+          <rect
+            class="pip-fill"
+            x={p.x}
+            y={PIP.y}
+            width={PIP.w}
+            height={PIP.h}
+            rx="2"
+            style={`animation-name: aw-pip-${i}`}
+          />
+        </g>
+      ))
+    }
+  </g>
+
+  <!-- the question, drilling inward -->
+  <g class="probe">
+    <circle class="probe-dot" cx={cx} cy={cy} r="6" style={`--aw-x:${PROBE_X - cx}px`}></circle>
+    <text class="probe-label" x={(cx + 16).toFixed(1)} y={(cy + 4).toFixed(1)} style={`--aw-x:${PROBE_X - cx}px`}>WHY?</text>
+  </g>
+</svg>
+
+<!-- per-layer keyframes, computed above so the reveal accumulates in step
+     with the probe; injected (not scoped) since @keyframes don't leak. -->
+<style set:html={keyframes + coreKeyframes + pipKeyframes}></style>
+
+<style>
+  .aw {
+    max-width: 600px;
+  }
+
+  .aw .drill {
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-opacity: 0.18;
+    stroke-dasharray: 3 6;
+  }
+
+  .aw .ring {
+    fill: var(--accent);
+    fill-opacity: 0.035;
+    stroke: var(--accent);
+    stroke-width: 1.4;
+    stroke-opacity: 0.16;
+    stroke-linejoin: round;
+    animation-duration: var(--aw-d, 5s);
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  /* a small token kept at each layer — "every answer becomes a tool you keep" */
+  .aw .keep {
+    fill: var(--accent);
+    opacity: 0;
+    animation-duration: var(--aw-d, 5s);
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  .aw .ring-label {
+    fill: var(--muted);
+    font-family: var(--font-mark, monospace);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    animation-duration: var(--aw-d, 5s);
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  .aw .core-ring {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.4;
+    stroke-opacity: 0.2;
+  }
+  .aw .core-dot {
+    fill: var(--accent);
+    fill-opacity: 0.2;
+  }
+  .aw .core {
+    opacity: 0.45;
+    animation: aw-core var(--aw-d, 5s) ease-out infinite;
+  }
+
+  /* the knowledge meter */
+  .aw .meter-label {
+    fill: var(--muted);
+    font-family: var(--font-mark, monospace);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .aw .pip-cell {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.1;
+    stroke-opacity: 0.32;
+  }
+  .aw .pip-fill {
+    fill: var(--accent);
+    fill-opacity: 0;
+    animation-duration: var(--aw-d, 5s);
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  /* the probe rides in along the centre line; --aw-x is its starting offset
+     to the right of the core, so it travels from +offset → 0 */
+  .aw .probe-dot,
+  .aw .probe-label {
+    animation: aw-probe var(--aw-d, 5s) ease-in infinite;
+  }
+  .aw .probe-dot {
+    fill: var(--accent);
+  }
+  .aw .probe-label {
+    fill: var(--accent);
+    font-family: var(--font-mark, monospace);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes aw-probe {
+    0% {
+      transform: translateX(var(--aw-x));
+      opacity: 0;
+    }
+    4% {
+      opacity: 1;
+    }
+    80% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    88%,
+    100% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+  }
+
+  /* resting state: the whole drill already done — every layer revealed and
+     kept, the origin lit, the question come to rest at the core. */
+  @media (prefers-reduced-motion: reduce) {
+    .aw .ring,
+    .aw .keep,
+    .aw .ring-label,
+    .aw .core,
+    .aw .pip-fill,
+    .aw .probe-dot,
+    .aw .probe-label {
+      animation: none;
+    }
+    .aw .pip-fill {
+      fill-opacity: 0.8;
+    }
+    .aw .ring {
+      stroke-opacity: 0.5;
+      fill-opacity: 0.1;
+    }
+    .aw .keep {
+      opacity: 1;
+    }
+    .aw .ring-label {
+      fill: var(--accent);
+    }
+    .aw .core {
+      opacity: 1;
+    }
+    .aw .probe-dot,
+    .aw .probe-label {
+      transform: translateX(calc(var(--aw-x) * 0.18));
+    }
+  }
+</style>

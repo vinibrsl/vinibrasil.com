@@ -1,0 +1,47 @@
+---
+title: "On breaking production"
+description: "Everybody breaks production. What separates good engineers is how they respond."
+pubDate: 2024-08-25
+---
+
+import DefenseLayers from "../../components/diagrams/DefenseLayers.astro";
+
+You just opened a pull request. Wrote a detailed description. Asked for
+reviews. The notification bell is ringing — your colleagues commenting
+"LGTM". You hit the merge button, and ten minutes later the error
+notifications start rolling in. You broke production.
+
+<DefenseLayers />
+
+That kicks off a familiar cycle. Impostor syndrome tells you you're not
+qualified for the job. You decide you're not as good as the other engineers.
+Everyone else — especially the Twitter stars — seems error-proof.
+
+Let me tell you something you already know: everybody makes mistakes. Senior
+engineers, junior engineers, CTOs. The difference between a good and an
+average professional isn't whether they break things — it's how they handle
+the incident. Good engineers:
+
+- Don't hunt for a culprit; they focus on solving the problem.
+- Know how to tell a critical problem from a minor one.
+- Don't fear asking other developers for help.
+- Warn the team the moment they notice a production issue — even if they
+  caused it.
+- Document the post-mortem in written, searchable form for future reference,
+  including the technical details and the potential business impact.
+
+You don't need to blame yourself. Production incidents don't happen because of
+one person's code. They're a chain of causes that trigger a problem, and those
+causes aren't only technical. Healthy engineering environments tend to have:
+
+- A strong testing culture, both automated and manual.
+- CI and CD tools wired into code submissions.
+- Error monitoring with real-time notifications.
+- A healthy code review culture.
+- Good communication culture and tools.
+- An expectation that errors happen and people make mistakes.
+
+Organizations and teams should expect incidents and build a strong, healthy
+culture around them. This doesn't mean incidents *should* happen often — but
+when they do, they're an opportunity to learn and to prepare better for the
+next one.

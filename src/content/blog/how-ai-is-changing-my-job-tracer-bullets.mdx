@@ -1,0 +1,70 @@
+---
+title: "How AI is changing my job as a Staff Engineer: Tracer bullets"
+description: "As implementation gets cheaper, integration, validation, restraint, and judgment get more valuable."
+pubDate: 2026-05-13
+---
+
+import TracerBullet from "../../components/diagrams/TracerBullet.astro";
+
+AI is rapidly changing software engineering, and with any kind of
+technological evolution, we need to sort the wheat from the chaff. On one side,
+Claude Code's creator Boris Cherny [says that "coding is largely
+solved"](https://www.youtube.com/watch?v=We7BZVKbCVw). On the other, [devs like
+Mario
+Zechner](https://mariozechner.at/posts/2026-03-25-thoughts-on-slowing-the-fuck-down/)
+argue that real software will always require human judgment, restraint and
+sustainable pace.
+
+Amid all the signal and noise, there's you and me: engineers who heavily use AI
+in their day-to-day, but aren't swept up in the frenzy.
+
+First, let me clear things up about my view on AI assisted software
+engineering:
+
+- I do use Claude Code.
+- It has made me more productive.
+- I get frustrated with it sometimes.
+- I'm constantly experimenting with new workflows and techniques.
+- I also see engineers using these tools carelessly, creating growing piles of
+  tech debt that hopefully Claude Opus 3001 can fix.
+
+Philosophical arguments aside, let's get to the code: how AI is changing my job
+as a Staff Engineer.
+
+## Tracer bullets
+
+Now that AI does the typing, engineers have more time to think about other
+parts of the stack: product, infrastructure, performance, databases. This is
+where **tracer bullets** come in handy, as opposed to proof of concepts or
+prototypes.
+
+Imagine you are building an online multiplayer game. Instead of prompting an AI
+with, "As an experienced Rockstar Games developer, build GTA VI and don't miss
+the deadline," you start with a tracer bullet: two cubes in an empty map. One
+player moves, and the other player sees that movement in real time over the
+network. No graphics, no missions, no physics engine. Just the smallest
+possible version that proves the core system works end-to-end.
+
+<TracerBullet />
+
+A tracer bullet differs from a PoC or prototype: its goal isn't to look
+impressive or prove a big idea, but to verify the full path works end-to-end.
+As a rule of thumb:
+
+- Tracer bullets optimize for stack integration
+- PoCs optimize for feasibility
+- Prototypes optimize for visualization.
+
+None of this is new, by the way. I remember when I first read The Pragmatic
+Programmer, Clean Code, and Mythical Man-Month. These books may feel distant in
+a fast-changing industry like ours, but they teach lessons that are even more
+important now. In fact, there's even a [dedicated AI agent skill for The
+Pragmatic Programmer](https://www.skills.sh/wondelai/skills/pragmatic-programmer)
+that includes tracer bullets.
+
+AI is not replacing software engineering. It is changing where engineering
+effort is spent. As implementation becomes cheaper, integration, validation,
+restraint, and judgment become more valuable.
+
+This is a series on what AI is actually doing to software engineering. We're
+all figuring this out together. If that's useful to you, follow along.

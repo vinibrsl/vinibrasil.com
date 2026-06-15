@@ -1,0 +1,226 @@
+---
+// A book and a language model trading text across an arc: a passage travels
+// out to the LLM, context comes back. Used in "How I read books better with
+// AI". Pure SVG + CSS — ships no client JS.
+//
+// This is the template for every diagram in the blog. The pattern, kept DRY:
+//   · layout (centering, responsive width, margin) → shared .diagram base in
+//     global.css; the root <svg> just adds class="diagram" (and may override
+//     --diagram-max to resize). Never re-declare layout here.
+//   · everything below is what's UNIQUE to this drawing: its shapes, its
+//     scoped paint/animation, its reduced-motion still frame, its a11y text.
+//
+// Styles are scoped to this component (Astro rewrites the selectors and the
+// @keyframes names), so the .bk class names can't leak into other diagrams.
+// Colours come from the site's global design tokens (--accent etc.).
+//
+// Motion has a defined resting state: with prefers-reduced-motion the scan
+// bar, the pulsing nodes, and BOTH exchange labels settle into a legible
+// still frame rather than disappearing — so the diagram still reads.
+---
+
+<svg
+  class="bk diagram"
+  viewBox="0 0 640 200"
+  role="img"
+  aria-labelledby="bk-title bk-desc"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title id="bk-title">An open book exchanging text with a language model</title>
+  <desc id="bk-desc">
+    A page on the left sends a passage along an arc to a hexagonal language
+    model on the right, which returns context — illustrating the back-and-forth
+    of reading a book alongside an AI assistant.
+  </desc>
+
+  <!-- page -->
+  <rect class="page" x="72" y="50" width="116" height="108" rx="2"></rect>
+  <g>
+    <line class="line" x1="88" y1="70" x2="172" y2="70"></line>
+    <line class="line" x1="88" y1="84" x2="172" y2="84"></line>
+    <line class="line" x1="88" y1="98" x2="172" y2="98"></line>
+    <line class="line" x1="88" y1="112" x2="172" y2="112"></line>
+    <line class="line" x1="88" y1="126" x2="160" y2="126"></line>
+  </g>
+  <rect class="scan" x="84" y="62" width="92" height="9" rx="2"></rect>
+  <text class="lab" x="130" y="178" text-anchor="middle">Page</text>
+
+  <!-- exchange -->
+  <path
+    d="M212,100 C 300,58 392,142 470,100"
+    fill="none"
+    stroke="var(--accent)"
+    stroke-opacity="0.35"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-dasharray="0.5 8"></path>
+  <text class="link fwd" style="animation-delay:0s">passage</text>
+  <text class="link back" style="animation-delay:3s">context</text>
+
+  <!-- llm -->
+  <polygon class="hex" points="530,52 575,78 575,122 530,148 485,122 485,78"
+  ></polygon>
+  <g class="wire">
+    <line x1="530" y1="100" x2="530" y2="55"></line>
+    <line x1="530" y1="100" x2="572" y2="80"></line>
+    <line x1="530" y1="100" x2="572" y2="120"></line>
+    <line x1="530" y1="100" x2="530" y2="145"></line>
+    <line x1="530" y1="100" x2="488" y2="120"></line>
+    <line x1="530" y1="100" x2="488" y2="80"></line>
+  </g>
+  <circle class="node core" cx="530" cy="100" r="7"></circle>
+  <circle class="node leaf" cx="530" cy="55" r="5" style="animation-delay:.2s"
+  ></circle>
+  <circle class="node leaf" cx="572" cy="80" r="5" style="animation-delay:.6s"
+  ></circle>
+  <circle class="node leaf" cx="572" cy="120" r="5" style="animation-delay:1s"
+  ></circle>
+  <circle class="node leaf" cx="530" cy="145" r="5" style="animation-delay:1.4s"
+  ></circle>
+  <circle class="node leaf" cx="488" cy="120" r="5" style="animation-delay:1.8s"
+  ></circle>
+  <circle class="node leaf" cx="488" cy="80" r="5" style="animation-delay:2.2s"
+  ></circle>
+  <text class="lab" x="530" y="178" text-anchor="middle">LLM</text>
+</svg>
+
+<style>
+  /* Layout (centering, responsive width, margin) comes from the shared
+     .diagram base in global.css. Only the bk-specific paint/animation lives
+     here. Override --diagram-max to change this drawing's size. */
+  .bk .page {
+    fill: #fff;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+  }
+  .bk .line {
+    stroke: var(--accent-soft);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .bk .scan {
+    fill: var(--accent-soft);
+    animation: bk-scan 7s ease-in-out infinite;
+  }
+  .bk .wire {
+    stroke: var(--accent-soft);
+    stroke-width: 1.5;
+  }
+  .bk .hex {
+    fill: var(--accent-soft);
+    stroke: var(--accent);
+    stroke-width: 1.5;
+  }
+  .bk .node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bk-pulse 4s ease-in-out infinite;
+  }
+  .bk .core {
+    fill: var(--accent);
+  }
+  .bk .leaf {
+    fill: #fff;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+  }
+  .bk .link {
+    offset-path: path("M212,100 C 300,58 392,142 470,100");
+    offset-rotate: 0deg;
+    font-family: var(--font-mark, monospace);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .bk .fwd {
+    fill: var(--accent);
+    animation: bk-fwd 6s linear infinite;
+  }
+  .bk .back {
+    fill: var(--accent);
+    animation: bk-back 6s linear infinite;
+  }
+  .bk .lab {
+    font-family: var(--font-mark, monospace);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    fill: var(--accent);
+    text-transform: uppercase;
+  }
+  @keyframes bk-scan {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(82px);
+    }
+  }
+  @keyframes bk-pulse {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(0.82);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+  }
+  @keyframes bk-fwd {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+  @keyframes bk-back {
+    0% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+  }
+
+  /* Resting state: settle into a legible still frame instead of vanishing. */
+  @media (prefers-reduced-motion: reduce) {
+    .bk .scan {
+      animation: none;
+      transform: translateY(0);
+    }
+    .bk .node {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .bk .fwd {
+      animation: none;
+      offset-distance: 30%;
+      opacity: 1;
+    }
+    .bk .back {
+      animation: none;
+      offset-distance: 70%;
+      opacity: 1;
+    }
+  }
+</style>

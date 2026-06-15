@@ -1,0 +1,58 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="404 — Not found" description="That page doesn't exist.">
+  <section class="notfound">
+    <div class="notfound-code">404</div>
+    <p class="notfound-lead">
+      This one moved, was renamed, or never made it to print.
+    </p>
+    <p class="notfound-back"><a href="/">← Back to the homepage</a></p>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    margin-top: 4rem;
+    text-align: center;
+  }
+
+  .notfound .label {
+    margin: 0 0 0.75rem;
+  }
+
+  /* the big mono-blue code — the page's single loud mark */
+  .notfound-code {
+    font-family: var(--font-mark);
+    font-size: clamp(4.5rem, 2rem + 14vw, 9rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+
+  .notfound-lead {
+    max-width: 30rem;
+    margin: 1.75rem auto 2rem;
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+    line-height: 1.5;
+    color: var(--fg-soft);
+    text-wrap: pretty;
+  }
+
+  /* an unmistakable link back — underlined, in the accent */
+  .notfound-back {
+    margin: 0;
+  }
+  .notfound-back a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: var(--accent-soft);
+    transition: text-decoration-color 0.15s ease;
+  }
+  .notfound-back a:hover {
+    text-decoration-color: var(--accent);
+  }
+</style>

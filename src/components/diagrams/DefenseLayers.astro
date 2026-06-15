@@ -1,0 +1,271 @@
+---
+// The Swiss-cheese / defense-in-depth model, isometric. The post's own words:
+// an incident is "a chain of causes that trigger a problem." Each defensive
+// layer a healthy team relies on — tests, CI/CD, review, monitoring — has
+// holes; when the holes line up, a change falls straight through every layer
+// and reaches production. The diagram IS that sentence.
+//
+// Same DRY contract as every diagram (see BookLLM.astro): layout comes from
+// the shared .diagram base in global.css; this file owns only what's unique.
+// The isometric geometry is COMPUTED here at build time, so there are no
+// hand-plotted points — change the layers array or constants and it redraws.
+// Pure SVG + CSS, zero client JS, with a reduced-motion still frame.
+
+const N = 4; // slab is an N×N grid square
+const R = 0.62; // hole radius, in grid units
+const cosA = Math.cos(Math.PI / 6); // 30° isometric
+const sinA = Math.sin(Math.PI / 6);
+
+// layers, top → bottom (drawn back-to-front). A change enters at the top.
+const layers = [
+  { z: 5.4, label: "TESTS" },
+  { z: 3.6, label: "CI / CD" },
+  { z: 1.8, label: "CODE REVIEW" },
+  { z: 0.0, label: "MONITORING" },
+];
+
+const proj = (gx, gy, z = 0) => ({
+  x: (gx - gy) * cosA,
+  y: (gx + gy) * sinA - z,
+});
+
+const corners = (z) => [
+  proj(0, 0, z),
+  proj(N, 0, z),
+  proj(N, N, z),
+  proj(0, N, z),
+];
+
+// every hole sits at the centre, so they align — the incident's path down
+const HX = N / 2;
+const HY = N / 2;
+const holeCenter = (z) => proj(HX, HY, z);
+
+// the incident trajectory: from above the top layer to below the bottom
+const trajTop = proj(HX, HY, layers[0].z + 1.5);
+const trajBot = proj(HX, HY, layers[layers.length - 1].z - 1.6);
+
+// faint internal grid lines per slab (the blueprint texture)
+const gridLines = (z) => {
+  const out = [];
+  for (let k = 1; k < N; k++) {
+    out.push([proj(k, 0, z), proj(k, N, z)]);
+    out.push([proj(0, k, z), proj(N, k, z)]);
+  }
+  return out;
+};
+
+// fit everything into the viewBox with uniform scale + centering
+const VB_W = 880;
+const VB_H = 680;
+const PAD = 74;
+const allPts = [
+  ...layers.flatMap((l) => corners(l.z)),
+  trajTop,
+  trajBot,
+  // label anchors extend to the right; keep them in frame
+  ...layers.map((l) => proj(N + 1.7, -0.4, l.z)),
+];
+const xs = allPts.map((p) => p.x);
+const ys = allPts.map((p) => p.y);
+const minX = Math.min(...xs);
+const maxX = Math.max(...xs);
+const minY = Math.min(...ys);
+const maxY = Math.max(...ys);
+const scale = Math.min(
+  (VB_W - 2 * PAD) / (maxX - minX),
+  (VB_H - 2 * PAD) / (maxY - minY),
+);
+const tx = (VB_W - (maxX - minX) * scale) / 2 - minX * scale;
+const ty = (VB_H - (maxY - minY) * scale) / 2 - minY * scale;
+const S = (p) => ({ x: p.x * scale + tx, y: p.y * scale + ty });
+
+const xy = (p) => {
+  const s = S(p);
+  return `${s.x.toFixed(1)},${s.y.toFixed(1)}`;
+};
+const poly = (arr) => arr.map(xy).join(" ");
+
+// a circle on the iso top-plane projects to an axis-aligned ellipse
+const HRX = 1.2247 * R * scale;
+const HRY = 0.7071 * R * scale;
+
+// slab = filled diamond with the hole punched out (even-odd), so lower layers
+// and the falling incident show through it
+const slabPath = (z) => {
+  const c = corners(z).map(S);
+  const h = S(holeCenter(z));
+  const ring =
+    `M ${(h.x - HRX).toFixed(1)},${h.y.toFixed(1)} ` +
+    `a ${HRX.toFixed(1)},${HRY.toFixed(1)} 0 1 0 ${(2 * HRX).toFixed(1)},0 ` +
+    `a ${HRX.toFixed(1)},${HRY.toFixed(1)} 0 1 0 ${(-2 * HRX).toFixed(1)},0 Z`;
+  return (
+    `M ${c[0].x.toFixed(1)},${c[0].y.toFixed(1)} ` +
+    `L ${c[1].x.toFixed(1)},${c[1].y.toFixed(1)} ` +
+    `L ${c[2].x.toFixed(1)},${c[2].y.toFixed(1)} ` +
+    `L ${c[3].x.toFixed(1)},${c[3].y.toFixed(1)} Z ` +
+    ring
+  );
+};
+
+const St = S(trajTop);
+const Sb = S(trajBot);
+const drop = (Sb.y - St.y).toFixed(1);
+const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
+---
+
+<svg
+  class="dl diagram"
+  viewBox={`0 0 ${VB_W} ${VB_H}`}
+  role="img"
+  aria-labelledby="dl-title dl-desc"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title id="dl-title">
+    The Swiss-cheese model of a production incident
+  </title>
+  <desc id="dl-desc">
+    Four stacked defensive layers — tests, CI/CD, code review, and monitoring —
+    each drawn as an isometric slab with a hole. The holes line up, so a change
+    entering at the top falls through every layer and reaches production at the
+    bottom: an incident is a chain of causes, not one layer failing alone.
+  </desc>
+
+  {
+    layers.map((l) => (
+      <g class="layer">
+        {gridLines(l.z).map((g) => (
+          <line
+            class="grid"
+            x1={S(g[0]).x.toFixed(1)}
+            y1={S(g[0]).y.toFixed(1)}
+            x2={S(g[1]).x.toFixed(1)}
+            y2={S(g[1]).y.toFixed(1)}
+          />
+        ))}
+        <path class="slab" fill-rule="evenodd" d={slabPath(l.z)} />
+        <text
+          class="layer-label"
+          x={labelAt(l).x.toFixed(1)}
+          y={labelAt(l).y.toFixed(1)}
+        >
+          {l.label}
+        </text>
+      </g>
+    ))
+  }
+
+  <!-- the incident: a change that found a path through every hole -->
+  <g class="incident">
+    <line
+      class="traj"
+      x1={St.x.toFixed(1)}
+      y1={St.y.toFixed(1)}
+      x2={Sb.x.toFixed(1)}
+      y2={Sb.y.toFixed(1)}
+    ></line>
+    <polygon
+      class="arrow"
+      points={`${Sb.x.toFixed(1)},${(Sb.y + 2).toFixed(1)} ${(Sb.x - 7).toFixed(1)},${(Sb.y - 11).toFixed(1)} ${(Sb.x + 7).toFixed(1)},${(Sb.y - 11).toFixed(1)}`}
+    ></polygon>
+    <circle
+      class="drop-dot"
+      cx={St.x.toFixed(1)}
+      cy={St.y.toFixed(1)}
+      r="6"
+      style={`--dl-drop:${drop}px`}></circle>
+    <text class="end-label top" x={St.x.toFixed(1)} y={(St.y - 34).toFixed(1)}
+      >YOUR CHANGE</text
+    >
+    <text
+      class="end-label bottom"
+      x={Sb.x.toFixed(1)}
+      y={(Sb.y + 38).toFixed(1)}>PRODUCTION</text
+    >
+  </g>
+</svg>
+
+<style>
+  .dl {
+    max-width: 620px;
+  }
+  .dl .grid {
+    stroke: var(--accent);
+    stroke-width: 0.75;
+    stroke-opacity: 0.16;
+  }
+  .dl .slab {
+    fill: var(--accent);
+    fill-opacity: 0.14;
+    stroke: var(--accent);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+  }
+  .dl .layer-label {
+    fill: var(--muted);
+    font-family: var(--font-mark, monospace);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    dominant-baseline: central;
+  }
+  .dl .traj {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 5 6;
+    stroke-linecap: round;
+    animation: dl-march 1.8s linear infinite;
+  }
+  .dl .arrow {
+    fill: var(--accent);
+  }
+  .dl .drop-dot {
+    fill: var(--accent);
+    animation: dl-fall 3.8s cubic-bezier(0.5, 0, 0.85, 0.4) infinite;
+  }
+  .dl .end-label {
+    font-family: var(--font-mark, monospace);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-anchor: middle;
+    text-transform: uppercase;
+  }
+  .dl .end-label.top {
+    fill: var(--muted);
+  }
+  .dl .end-label.bottom {
+    fill: var(--accent);
+  }
+
+  @keyframes dl-march {
+    to {
+      stroke-dashoffset: -22;
+    }
+  }
+  @keyframes dl-fall {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(var(--dl-drop));
+      opacity: 0;
+    }
+  }
+
+  /* resting state: the change has come to rest at production, nothing moving */
+  @media (prefers-reduced-motion: reduce) {
+    .dl .traj {
+      animation: none;
+    }
+    .dl .drop-dot {
+      animation: none;
+      transform: translateY(var(--dl-drop));
+    }
+  }
+</style>

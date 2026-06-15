@@ -1,0 +1,14 @@
+/* Build-only stylesheet — NOT shipped to the site.
+   rehype-mermaid loads this into the headless Chromium page (via the `css`
+   option in astro.config.mjs) before it measures and lays out each diagram.
+   Mermaid sizes its label boxes to the metrics of the font it renders with;
+   if that font differs from the one the page later displays, the centering
+   offsets it baked in are wrong and labels drift inside their boxes.
+   So we feed the build the exact display face (Departure Mono). The path is
+   relative to THIS file's URL, resolving to the woff2 in public/fonts. */
+@font-face {
+  font-family: "Departure Mono";
+  src: url("../../public/fonts/DepartureMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}

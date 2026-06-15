@@ -1,0 +1,78 @@
+---
+title: "On asking why"
+description: "What a strange User-Agent string taught me about software, assumptions, and the difference between curiosity and pragmatic critical thinking."
+pubDate: 2026-06-02
+---
+
+import AskingWhy from "../../components/diagrams/AskingWhy.astro";
+
+The first time I looked at a `User-Agent` string, I had no idea what it
+meant. Every browser on earth claims to be Mozilla? Chrome, Safari, Edge —
+they all open with the same word, and somewhere in the middle sits this thing
+called Gecko.
+
+So I asked why. The answer turned out to be a small history of the web: old
+compatibility hacks, copied forward because removing them would break the
+world.
+
+<AskingWhy />
+
+That's how progress works. We hide old decisions inside new solutions. We
+solve a problem with a tool, the tool creates a new problem, and we reach for
+another tool. The loop spins fast enough that we eventually forget the whys.
+For example:
+
+- Why do we need HTTPS, and what was the web doing before it that was so
+  risky?
+- Why wasn't ASCII enough, and what pushed us into Unicode?
+- Why does an LLM read tokens instead of words, and who decides where one
+  token ends?
+- Why does an LLM swear strawberry has only two r's?
+- What is a glitch token like `SolidGoldMagikarp`, and how did it end up in a
+  model's vocabulary?
+
+Open-source software made it possible to be a great programmer without ever
+asking. You can ship something real and never once peek under the hood. I'm
+not asking you to rebuild any of this yourself. I'm asking you to notice the
+questions.
+
+Asking why builds something curiosity alone never will: **pragmatic critical
+thinking**. As the saying goes, curiosity kills the cat — and it can drag you
+down a rabbit hole at 2am with nothing to show for it. Pragmatic thinking has
+a destination and hands you knowledge you can actually use.
+
+Take HTTP/3. If you trace the decisions that carried the web from HTTP/1 all
+the way there, you walk away with real engineering design insights. If you
+want to follow that thread, start with [this MDN article on the Evolution of
+HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP),
+then read Jay Alammar's [The Illustrated
+Transformer](https://jalammar.github.io/illustrated-transformer/). And if
+you're feeling brave, the paper that kicked it all off: [Attention Is All You
+Need](https://arxiv.org/abs/1706.03762).
+
+Here's the good news. Pragmatic critical thinking is a skill, not a gift, so
+you can practice it. I keep three habits that help me point the question at
+things that matter, and odds are you already do some of them by accident.
+Doing them on purpose is what speeds you up.
+
+1. **Recognize your assumptions.** An assumption is anything you accept as
+   true without proof. If you live in object-oriented code, you might assume
+   you always need classes and methods to build a program. If you live in
+   model APIs, you might assume a bigger model is always better, or that the
+   model reads your prompt the way you meant it. Some assumptions are
+   sneakier — like ["the time 23:59:60 is always
+   invalid"](https://www.creativedeletion.com/2015/01/28/falsehoods-programmers-date-time-zones.html)
+   (spoiler: it isn't), or its AI cousin, "an LLM can always count the letters
+   in a word" (sorry, it can't). Watch for *always*, *must*, and *should*.
+   Those words are usually an assumption in disguise.
+
+2. **Debug your assumptions.** Before you ask why, ask whether the thing is
+   even true. Reason it through, test it, and if it falls apart, move on to
+   the last step.
+
+3. **Seek answers.** This is the moment curiosity would have died, and where
+   pragmatic inquisitiveness takes its place instead. Every answer you find
+   becomes a tool you keep, and each one makes the next why easier to ask.
+
+We all believe a few false things; that's just part of being human. Treat each
+one as an invitation.
