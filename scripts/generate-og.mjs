@@ -105,7 +105,7 @@ function template({ title, description, eyebrow }) {
       <h1>${esc(title)}</h1>
       ${description ? `<p class="desc">${esc(description)}</p>` : ""}
     </div>
-    <div class="foot"><span>${eyebrow ? "Essay" : "Blog"}</span><span class="rule"></span><span>vinibrasil.com</span></div>
+    <div class="foot"><span>Blog</span><span class="rule"></span><span>vinibrasil.com</span></div>
   </body></html>`;
 }
 

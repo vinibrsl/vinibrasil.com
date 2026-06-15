@@ -1,7 +1,5 @@
 # build output
 dist/
-# generated Open Graph cards (rebuilt by scripts/generate-og.mjs on `npm run build`)
-public/og/
 # generated types
 .astro/
 # dependencies

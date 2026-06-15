@@ -7,10 +7,12 @@
     "dev": "astro dev",
     "og": "node scripts/generate-og.mjs",
     "build": "node scripts/generate-og.mjs && astro build",
+    "build:ci": "astro build",
     "preview": "astro preview",
     "deploy": "npm run build && wrangler deploy",
     "cf-preview": "npm run build && wrangler dev",
-    "astro": "astro"
+    "astro": "astro",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",

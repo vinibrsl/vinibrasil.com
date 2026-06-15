@@ -1,0 +1,14 @@
+#!/bin/sh
+# Keep the committed Open Graph cards (public/og/*.png) in sync.
+#
+# CI deploys (Cloudflare Workers Builds) run `astro build` only — no Playwright —
+# so the cards must be committed. When a commit touches post content, the fonts,
+# or the generator itself, regenerate the cards and stage them automatically.
+set -e
+
+if git diff --cached --name-only \
+  | grep -qE '^(src/content/blog/|public/fonts/|scripts/generate-og\.mjs$)'; then
+  echo "pre-commit: post/font/generator change detected — rebuilding Open Graph cards…"
+  npm run og --silent
+  git add public/og
+fi
