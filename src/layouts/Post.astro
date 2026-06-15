@@ -1,14 +1,17 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
 import Base from "./Base.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import ScrollRail from "../components/ScrollRail.astro";
 import { SITE_TITLE } from "../consts";
 
 interface Props {
   post: CollectionEntry<"blog">;
+  headings?: MarkdownHeading[];
 }
 
-const { post } = Astro.props;
+const { post, headings = [] } = Astro.props;
 const { title, description, pubDate, updatedDate } = post.data;
 ---
 
@@ -22,6 +25,7 @@ const { title, description, pubDate, updatedDate } = post.data;
   imageAlt={`${title} — ${SITE_TITLE}`}
   markdown={`/${post.id}.md`}
 >
+  <ScrollRail headings={headings} />
   <article class="post">
     <header class="post-header">
       <div class="post-eyebrow">

@@ -124,22 +124,26 @@
     stroke: var(--accent);
     stroke-width: 1.5;
   }
+  /* The label rides the arc via a transform: translate() keyframe track
+     (points sampled off the bezier below). We avoid CSS Motion Path /
+     offset-path here: WebKit doesn't apply it to SVG elements, so the words
+     wouldn't flow in Safari. transform on SVG <text> works everywhere. */
   .bk .link {
-    offset-path: path("M212,100 C 300,58 392,142 470,100");
-    offset-rotate: 0deg;
     font-family: var(--font-mark, monospace);
     font-size: 9px;
     letter-spacing: 0.04em;
     text-anchor: middle;
     dominant-baseline: central;
   }
+  /* `backwards` fill so the label holds its 0% keyframe (parked + invisible)
+     during the start delay, instead of flashing at the SVG origin first. */
   .bk .fwd {
     fill: var(--accent);
-    animation: bk-fwd 6s linear infinite;
+    animation: bk-fwd 6s linear infinite backwards;
   }
   .bk .back {
     fill: var(--accent);
-    animation: bk-back 6s linear infinite;
+    animation: bk-back 6s linear infinite backwards;
   }
   .bk .lab {
     font-family: var(--font-mark, monospace);
@@ -168,35 +172,55 @@
       transform: scale(1.15);
     }
   }
+  /* Page → LLM. Translate points trace the exchange arc left to right. */
   @keyframes bk-fwd {
     0% {
-      offset-distance: 0%;
+      transform: translate(212px, 100px);
       opacity: 0;
     }
     12% {
       opacity: 1;
     }
+    25% {
+      transform: translate(278px, 88px);
+    }
+    50% {
+      transform: translate(345px, 100px);
+    }
+    75% {
+      transform: translate(409px, 112px);
+    }
     88% {
       opacity: 1;
     }
     100% {
-      offset-distance: 100%;
+      transform: translate(470px, 100px);
       opacity: 0;
     }
   }
+  /* LLM → Page. Same arc, travelled right to left. */
   @keyframes bk-back {
     0% {
-      offset-distance: 100%;
+      transform: translate(470px, 100px);
       opacity: 0;
     }
     12% {
       opacity: 1;
     }
+    25% {
+      transform: translate(409px, 112px);
+    }
+    50% {
+      transform: translate(345px, 100px);
+    }
+    75% {
+      transform: translate(278px, 88px);
+    }
     88% {
       opacity: 1;
     }
     100% {
-      offset-distance: 0%;
+      transform: translate(212px, 100px);
       opacity: 0;
     }
   }
@@ -214,12 +238,12 @@
     }
     .bk .fwd {
       animation: none;
-      offset-distance: 30%;
+      transform: translate(305px, 93px);
       opacity: 1;
     }
     .bk .back {
       animation: none;
-      offset-distance: 70%;
+      transform: translate(396px, 109px);
       opacity: 1;
     }
   }

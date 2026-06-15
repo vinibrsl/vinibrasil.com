@@ -1,0 +1,261 @@
+---
+/* ──────────────────────────────────────────────────────────────
+   ScrollRail — a vertical drafting scale parked in the left gutter of a
+   post. The masthead's ticked drafting rule, turned on its side: minor
+   ticks fill border-grey → accent-blue as you scroll, a fader playhead
+   rides the leading edge, and every heading is a clickable node with its
+   text beside it in the mono chrome face. A page map you can feel.
+
+   Marks are rendered server-side from the post's headings (so scoped
+   styles apply and no JS injection is needed). The client script only
+   measures heading positions and tracks scroll — no timers, no idle
+   motion: it moves only when you scroll. Hidden on narrow screens and
+   inert under reduced-motion (it's just a clip width, so it stays calm).
+   ────────────────────────────────────────────────────────────── */
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+// h2 + h3 make the map; the title (h1) is the page itself.
+const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  marks.length > 1 && (
+    <nav class="rail" aria-label="On this page">
+      <span class="rail-fill" aria-hidden="true" />
+      <span class="rail-playhead" aria-hidden="true" />
+      {marks.map((h) => (
+        <a class="rail-mark" href={`#${h.slug}`} data-depth={h.depth}>
+          <span class="rail-dot" aria-hidden="true" />
+          <span class="rail-lbl">{h.text}</span>
+        </a>
+      ))}
+    </nav>
+  )
+}
+
+<style>
+  /* the rail: a centred scale in the left gutter, built from the same
+     drafting-rule recipe as .site-header — baseline + two end ticks + a
+     measured minor-tick scale, rotated vertical. */
+  .rail {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    left: clamp(0.75rem, 3vw, 2rem);
+    width: 11px;
+    height: 60vh;
+    z-index: 5;
+    background-image:
+      linear-gradient(var(--border), var(--border)),
+      linear-gradient(var(--border), var(--border)),
+      linear-gradient(var(--border), var(--border)),
+      repeating-linear-gradient(
+        to bottom,
+        var(--border) 0 1px,
+        transparent 1px 22px
+      );
+    background-repeat: no-repeat;
+    background-size:
+      1px 100%,
+      7px 1px,
+      7px 1px,
+      4px 100%;
+    background-position:
+      left top,
+      left top,
+      left bottom,
+      left top;
+  }
+
+  /* the read portion: the same minor scale in accent-blue, clipped from
+     the bottom up to the scroll --progress. */
+  .rail-fill {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(var(--accent), var(--accent)),
+      repeating-linear-gradient(
+        to bottom,
+        var(--accent) 0 1px,
+        transparent 1px 22px
+      );
+    background-repeat: no-repeat;
+    background-size:
+      1px 100%,
+      4px 100%;
+    background-position:
+      left top,
+      left top;
+    clip-path: inset(0 0 calc(100% - var(--progress, 0%)) 0);
+  }
+
+  /* fader playhead riding the leading edge */
+  .rail-playhead {
+    position: absolute;
+    left: 0;
+    top: var(--progress, 0%);
+    width: 11px;
+    height: 2px;
+    background: var(--accent);
+    transform: translateY(-1px);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* a heading mark: a node on the baseline + its text in the mono face.
+     --at (0–1, set by the script) is the heading's scroll position. */
+  .rail-mark {
+    position: absolute;
+    left: -3px; /* centre the 7px node on the left-edge baseline */
+    top: calc(var(--at, 0) * 100%);
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    z-index: 1;
+    text-decoration: none;
+  }
+  .rail-dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .rail-lbl {
+    position: relative;
+    font-family: var(--font-mark);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--muted);
+    background: var(--bg); /* legible if it grazes the text column */
+    padding: 0 0.3rem;
+    transition:
+      color 0.15s ease,
+      opacity 0.4s ease;
+  }
+  /* the strikethrough: a pen stroke in the label's own ink that draws
+     left→right across it when the section is reached, like crossing it
+     off. Reversible — it retracts if you scroll back above the heading. */
+  .rail-lbl::after {
+    content: "";
+    position: absolute;
+    left: 0.3rem;
+    right: 0.3rem;
+    top: 50%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s ease;
+  }
+  /* h3 sits a touch in from h2 */
+  .rail-mark[data-depth="3"] .rail-lbl {
+    padding-left: 0.85rem;
+    font-size: 0.56rem;
+  }
+
+  /* reached: the node fills, and the label crosses off in its own ink
+     (the ::after stroke draws) and fades back a little */
+  .rail-mark.passed .rail-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .rail-mark.passed .rail-lbl {
+    opacity: 0.55;
+  }
+  .rail-mark.passed .rail-lbl::after {
+    transform: scaleX(1);
+  }
+  .rail-mark:hover .rail-lbl,
+  .rail-mark:focus-visible .rail-lbl {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  /* narrow screens: stand down rather than crowd the text column */
+  @media (max-width: 64rem) {
+    .rail {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Measure heading positions, track scroll → fill + node states.
+  // No timers, no idle loop: it only runs on scroll/resize.
+  const rail = document.querySelector<HTMLElement>(".rail");
+  if (rail) {
+    // Safari won't repaint clip-path / top when the custom property they
+    // read from changes via JS, so the fill and playhead would freeze.
+    // Mutate those properties inline instead — a direct style write always
+    // repaints, cross-browser.
+    const fill = rail.querySelector<HTMLElement>(".rail-fill");
+    const playhead = rail.querySelector<HTMLElement>(".rail-playhead");
+
+    // each mark's heading is its own href target (#slug)
+    const marks = Array.from(
+      rail.querySelectorAll<HTMLAnchorElement>(".rail-mark"),
+    ).map((el) => ({
+      el,
+      heading: document.getElementById(el.hash.slice(1)),
+      at: 0,
+    }));
+
+    // total scrollable distance; 0 maps every position to the top
+    const scrollMax = () =>
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    function layout() {
+      const max = scrollMax();
+      for (const m of marks) {
+        if (!m.heading) continue;
+        const top = m.heading.getBoundingClientRect().top + window.scrollY;
+        m.at = max > 0 ? Math.min(1, Math.max(0, top / max)) : 0;
+        m.el.style.top = (m.at * 100).toFixed(2) + "%";
+      }
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const max = scrollMax();
+        const p = max > 0 ? window.scrollY / max : 0;
+        const pct = (p * 100).toFixed(2) + "%";
+        if (fill)
+          fill.style.clipPath = `inset(0 0 ${(100 - p * 100).toFixed(2)}% 0)`;
+        if (playhead) playhead.style.top = pct;
+        for (const m of marks)
+          m.el.classList.toggle("passed", p >= m.at - 0.001);
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener(
+      "resize",
+      () => {
+        layout();
+        onScroll();
+      },
+      { passive: true },
+    );
+    layout();
+    onScroll();
+  }
+</script>
