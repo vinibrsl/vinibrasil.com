@@ -41,7 +41,6 @@ export const travelYears: Year[] = [
       { place: "Villeurbanne", country: "France" },
       { place: "Brussels", country: "Belgium" },
       { place: "Bruges", country: "Belgium" },
-      { place: "Kilkenny", country: "Ireland" },
     ],
   },
   {
