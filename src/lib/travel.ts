@@ -17,12 +17,16 @@ export const travelYears: Year[] = [
   {
     year: "2026",
     places: [
+      { place: "Grafton, UT", country: "USA" },
+      { place: "Bryce Canyon National Park", country: "USA" },
+      { place: "Kanab, UT", country: "USA" },
       { place: "Zion National Park", country: "USA" },
-      { place: "Springdale", country: "USA" },
-      { place: "Las Vegas", country: "USA" },
-      { place: "Berkeley", country: "USA" },
+      { place: "Springdale, UT", country: "USA" },
+      { place: "St. George, UT", country: "USA" },
+      { place: "Las Vegas, NV", country: "USA" },
+      { place: "Berkeley, CA", country: "USA" },
       {
-        place: "San Francisco",
+        place: "San Francisco, CA",
         country: "USA",
         image: {
           src: "https://images.unsplash.com/photo-1757078824095-5fcb9811c307?q=80&w=1973&auto=format&fit=crop",
