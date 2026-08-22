@@ -18,8 +18,11 @@ export const READING_TITLE = "Reading";
 export const READING_DESCRIPTION = "Books I've read, logged by year.";
 
 export const books: Book[] = [
+  { author: "C.S. Lewis", title: "The Great Divorce", yearRead: 2026, url: "https://www.goodreads.com/book/show/25845273-the-great-divorce" },
+  { author: "Fyodor Dostoevsky", title: "White Nights", yearRead: 2026, url: "https://www.goodreads.com/book/show/1772910.White_Nights" },
+  { author: "John Piper", title: "Seeing and Savoring Jesus Christ", yearRead: 2026, url: "https://www.desiringgod.org/books/seeing-and-savoring-jesus-christ" },
   { author: "Heber Campos Jr", title: "Tomando decisões segundo a vontade de Deus", yearRead: 2026, url: "https://www.goodreads.com/book/show/77251129-tomando-decis-es-segundo-a-vontade-de-deus" },
-  { author: "Roy Rudnick & Michelle Weiss", title: "Mundo por Terra (World by Land)", yearRead: 2026, url: "https://www.amazon.com.br/Mundo-por-terra-fascinante-mundo/dp/B07DNJYNZQ", note: "This book always scratches my travel itch." },
+  { author: "Roy Rudnick & Michelle Weiss", title: "World by Land", yearRead: 2026, url: "https://www.amazon.com.br/Mundo-por-terra-fascinante-mundo/dp/B07DNJYNZQ", note: "This book always scratches my travel itch." },
   { author: "Sônia Bridi", title: "Diário do clima", yearRead: 2026, url: "https://www.amazon.com.br/Di%C3%A1rio-do-clima-S%C3%B4nia-Bridi/dp/852505139X" },
   { author: "John Piper", title: "Desiring God", yearRead: 2026, url: "https://www.goodreads.com/book/show/213367.Desiring_God", note: "Profound and life changing read." },
   { author: "Will Larson", title: "Staff Engineer", yearRead: 2026, url: "https://www.goodreads.com/book/show/56481725-staff-engineer", note: "Great read! I read it right after stepping into a staff engineer role at CrewAI." },
