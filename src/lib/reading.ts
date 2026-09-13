@@ -18,6 +18,10 @@ export const READING_TITLE = "Reading";
 export const READING_DESCRIPTION = "Books I've read, logged by year.";
 
 export const books: Book[] = [
+  { author: "C.S. Lewis", title: "The Reading Life", yearRead: 2026, url: "https://www.goodreads.com/book/show/43667324-the-reading-life" },
+  { author: "Paschoal Piragine Jr.", title: "Pessoas simples, feitos grandiosos", yearRead: 2026, url: "https://www.amazon.com.br/Pessoas-Simples-Grandiosos-Paschoal-Piragine/dp/6589636508" },
+  { author: "David Thomas & Andrew Hunt", title: "The Pragmatic Programmer", yearRead: 2026, url: "https://www.goodreads.com/book/show/45280024-the-pragmatic-programmer" },
+  { author: "Richard P. Feynman", title: "Surely You're Joking, Mr. Feynman!", yearRead: 2026, url: "https://www.goodreads.com/book/show/15997031-surely-you-re-joking-mr-feynman" },
   { author: "C.S. Lewis", title: "The Great Divorce", yearRead: 2026, url: "https://www.goodreads.com/book/show/25845273-the-great-divorce" },
   { author: "Fyodor Dostoevsky", title: "White Nights", yearRead: 2026, url: "https://www.goodreads.com/book/show/1772910.White_Nights" },
   { author: "John Piper", title: "Seeing and Savoring Jesus Christ", yearRead: 2026, url: "https://www.desiringgod.org/books/seeing-and-savoring-jesus-christ" },
