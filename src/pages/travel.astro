@@ -1,66 +1,15 @@
 ---
+import { getEntry, render } from "astro:content";
 import Base from "../layouts/Base.astro";
-import Figure from "../components/Figure.astro";
-import {
-  travelYears,
-  TRAVEL_TITLE,
-  TRAVEL_DESCRIPTION,
-} from "../lib/travel";
 
-// Flatten the years into one chronological stream for the timeline. Each entry
-// carries its year, shown only when it changes so the rail isn't a wall of
-// repeated years.
-const entries = travelYears.flatMap((y) =>
-  y.places.map((p, i) => ({
-    ...p,
-    year: y.year,
-    firstOfYear: i === 0,
-  })),
-);
+const page = await getEntry("pages", "travel");
+if (!page) throw new Error("Missing travel page");
+const { Content } = await render(page);
 ---
 
-<Base
-  title={TRAVEL_TITLE}
-  description={TRAVEL_DESCRIPTION}
-  markdown="/travel.md"
->
-  <article class="post">
-    <header class="post-header">
-      <h1 class="page-title">Travel</h1>
-    </header>
-    <div class="post-body">
-      <p>
-        I'm a programmer, so my office is anywhere with decent wifi. In 2022 my
-        wife and I took that literally: we left Curitiba, our home in Brazil,
-        and spent a year living out of two suitcases.
-      </p>
-      <p>
-        We're back home now, but the travel habit stuck. I
-        <a href="https://unsplash.com/@vinib" target="_blank" rel="me noopener"
-          >take photos</a
-        > wherever we end up. Here's an updated list of our most recent trips:
-      </p>
-
-      <ol class="timeline">
-        {
-          entries.map((e) => (
-            <li class="tl-row" data-year={e.firstOfYear ? "" : undefined}>
-              <span class="tl-year">{e.firstOfYear ? e.year : ""}</span>
-              <span class="tl-place">{e.place}</span>
-              <span class="tl-country">{e.country}</span>
-              {e.note && <p class="tl-note">{e.note}</p>}
-              {e.image && (
-                <Figure
-                  src={e.image.src}
-                  alt={e.image.alt}
-                  caption={e.image.caption}
-                  class="tl-photo"
-                />
-              )}
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+<Base title={page.data.title} description={page.data.description} markdown="/travel.md">
+  <article class="post log-page">
+    <header class="post-header"><h1 class="page-title">{page.data.title}</h1></header>
+    <div class="post-body"><Content /></div>
   </article>
 </Base>

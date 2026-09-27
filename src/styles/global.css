@@ -582,6 +582,59 @@ main {
 .post-body li + li {
   margin-top: 0.4rem;
 }
+
+.log-page .post-body > h2 {
+  margin: 2.5rem 0 0;
+  font-family: var(--font-mark);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+.log-page .post-body > ul {
+  list-style: none;
+  margin: 0.6rem 0 0 0.3rem;
+  padding: 0 0 0 1.35rem;
+  border-left: 1px solid var(--border);
+}
+.log-page .post-body > ul > li {
+  position: relative;
+  padding: 0.45rem 0;
+  font-family: var(--font-mark);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  font-feature-settings: normal;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+}
+.log-page .post-body > ul > li + li {
+  margin-top: 0;
+}
+.log-page .post-body > ul > li::before {
+  content: "";
+  position: absolute;
+  top: calc(0.45rem + 0.48em);
+  left: calc(-1.35rem - 3px);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.log-page .post-body > ul > li > p {
+  margin: 0;
+}
+.log-page .post-body > ul > li > p + p {
+  margin-top: 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 0.94rem;
+  font-style: italic;
+  text-transform: none;
+  color: var(--muted);
+}
+.log-page .post-body > ul > li .fig {
+  max-width: 32rem;
+  margin: 0.75rem 0 0.5rem;
+}
 /* GFM task lists: drop the bullet, align the checkbox */
 .post-body .contains-task-list {
   list-style: none;
@@ -698,148 +751,4 @@ pre.astro-code code {
     transition: none !important;
     animation: none !important;
   }
-}
-
-/* ── reading list ──────────────────────────────────────────────────
-   Books grouped by year. A pixel-label year header (the technical
-   register), then a dense one-line-per-book list: serif title on the
-   left, author in muted mono on the right. Kept compact so a long list
-   scans quickly down the page. */
-.shelf {
-  margin-top: 2.25rem;
-}
-.shelf-status {
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid var(--border);
-}
-/* .post-body ul sets a list indent; out-specify it so the shelf sits flush. */
-.post-body .books {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.book {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: 0 1rem;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.book-title {
-  font-family: var(--font-mark);
-  font-size: 0.82rem;
-  line-height: 1.4;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg);
-  font-feature-settings: normal;
-}
-a.book-title {
-  color: var(--fg);
-  transition: color 0.15s ease;
-}
-a.book-title:hover {
-  color: var(--accent);
-}
-.book-author {
-  font-family: var(--font-mark);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-align: right;
-  color: var(--muted);
-  font-feature-settings: normal;
-}
-/* a personal aside on a book — quiet italic serif, the lone warm voice
-   among the mono catalog lines */
-.book-note {
-  grid-column: 1 / -1;
-  margin: 0.45rem 0 0.15rem;
-  max-width: 34rem;
-  font-style: italic;
-  font-size: 0.92rem;
-  line-height: 1.5;
-  color: var(--fg-soft);
-  text-wrap: pretty;
-}
-/* ── travel timeline ───────────────────────────────────────────────
-   One chronological stream rather than year buckets. A hairline rail runs
-   down the left; each entry is a tick on it, reading YEAR · PLACE · COUNTRY.
-   The year prints only when it changes, so the rail marks the turn of each
-   year instead of repeating it on every row. */
-.post-body .timeline {
-  list-style: none;
-  margin: 2.25rem 0 0;
-  padding: 0;
-}
-.tl-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: 0 1.1rem;
-  /* gutter holds the year labels; the rail is the left border at its edge */
-  margin-left: 4rem;
-  padding: 0.4rem 0 0.4rem 1.25rem;
-  border-left: 1px solid var(--border);
-}
-/* the year sits in the left gutter, right-aligned against the rail; printed
-   only at the turn of each year */
-.tl-year {
-  position: absolute;
-  left: -4rem;
-  width: 3.2rem;
-  text-align: right;
-  font-family: var(--font-mark);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-  font-feature-settings: normal;
-}
-/* a tick on the rail; a filled accent node at the turn of each year */
-.tl-row::before {
-  content: "";
-  position: absolute;
-  left: -3.5px;
-  top: 0.6rem;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-}
-.tl-row[data-year]::before {
-  background: var(--accent);
-}
-.tl-place {
-  font-family: var(--font-mark);
-  font-size: 0.82rem;
-  line-height: 1.4;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg);
-  font-feature-settings: normal;
-}
-.tl-country {
-  font-family: var(--font-mark);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-align: right;
-  color: var(--muted);
-  font-feature-settings: normal;
-}
-.tl-note {
-  grid-column: 1 / -1;
-  margin: 0.45rem 0 0.15rem;
-  max-width: 34rem;
-  font-style: italic;
-  font-size: 0.92rem;
-  line-height: 1.5;
-  color: var(--fg-soft);
-  text-wrap: pretty;
-}
-.post-body .fig.tl-photo {
-  grid-column: 1 / -1;
-  margin: 0.7rem 0 0.3rem;
 }

@@ -1,66 +1,15 @@
 ---
+import { getEntry, render } from "astro:content";
 import Base from "../layouts/Base.astro";
-import {
-  books,
-  readingYearsDesc,
-  READING_TITLE,
-  READING_DESCRIPTION,
-} from "../lib/reading";
+
+const page = await getEntry("pages", "reading");
+if (!page) throw new Error("Missing reading page");
+const { Content } = await render(page);
 ---
 
-<Base
-  title={READING_TITLE}
-  description={READING_DESCRIPTION}
-  markdown="/reading.md"
->
-  <article class="post">
-    <header class="post-header">
-      <h1 class="page-title">Reading</h1>
-    </header>
-    <div class="post-body">
-      <p>
-        I've read for as long as I can remember. But people have read and
-        written for thousands of years, and there's a reason. It's how
-        knowledge sticks.
-      <p>
-        I'm a software engineer; I'm also a Christian, and a theologian (long
-        story). So the list runs all over: theology, novels, travel books,
-        photography, software engineering.
-      </p>
-      <p>
-        I keep my notes in a
-        <a
-          href="https://en.wikipedia.org/wiki/Zettelkasten"
-          target="_blank"
-          rel="noopener">Zettelkasten</a
-        >, so whatever's worth remembering outlives the book. Here's a list of
-        what I've been reading, with some personal notes.
-      </p>
-
-      {
-        readingYearsDesc.map((year) => (
-          <section class="shelf">
-            <h2 class="label shelf-status">{year}</h2>
-            <ul class="books">
-              {books
-                .filter((b) => b.yearRead === year)
-                .map((book) => (
-                  <li class="book">
-                    {book.url ? (
-                      <a class="book-title" href={book.url} target="_blank" rel="noopener">
-                        {book.title}
-                      </a>
-                    ) : (
-                      <span class="book-title">{book.title}</span>
-                    )}
-                    {book.author && <span class="book-author">{book.author}</span>}
-                    {book.note && <p class="book-note">{book.note}</p>}
-                  </li>
-                ))}
-            </ul>
-          </section>
-        ))
-      }
-    </div>
+<Base title={page.data.title} description={page.data.description} markdown="/reading.md">
+  <article class="post log-page">
+    <header class="post-header"><h1 class="page-title">{page.data.title}</h1></header>
+    <div class="post-body"><Content /></div>
   </article>
 </Base>

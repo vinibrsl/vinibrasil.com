@@ -43,6 +43,14 @@ draft: false              # optional; drafts are excluded from build
 ---
 ```
 
+## Editing pages
+
+Edit `src/content/pages/home.md` for the home-page intro. Add books to
+`src/content/pages/reading.md` and trips to `src/content/pages/travel.md`.
+Use year headings and Markdown list items. Put a note or photo on an indented
+line below an item. The same files supply the HTML pages, the `.md` downloads,
+and `/llms-full.txt`.
+
 ## Deploy (Cloudflare Workers)
 
 Pushes to `main` deploy automatically via [Cloudflare Workers

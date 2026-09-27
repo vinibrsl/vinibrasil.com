@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { getPosts, postToMarkdown } from "../lib/posts";
-import { travelToMarkdown } from "../lib/travel";
-import { readingToMarkdown } from "../lib/reading";
+import { getEntry } from "astro:content";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 
 // /llms-full.txt — the whole site inlined as Markdown: every post (newest
@@ -9,6 +8,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 // single fetch.
 export const GET: APIRoute = async () => {
   const posts = await getPosts();
+  const reading = await getEntry("pages", "reading");
+  const travel = await getEntry("pages", "travel");
+  if (!reading || !travel) throw new Error("Missing reading or travel page");
 
   const body = [
     `# ${SITE_TITLE}`,
@@ -16,8 +18,8 @@ export const GET: APIRoute = async () => {
     `> ${SITE_DESCRIPTION}`,
     "",
     ...posts.map(postToMarkdown),
-    readingToMarkdown(),
-    travelToMarkdown(),
+    `# ${reading.data.title}\n\n> ${reading.data.description}\n\n${reading.body}`,
+    `# ${travel.data.title}\n\n> ${travel.data.description}\n\n${travel.body}`,
   ].join("\n");
 
   return new Response(body, {

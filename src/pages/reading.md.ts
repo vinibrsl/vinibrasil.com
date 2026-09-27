@@ -1,8 +1,10 @@
 import type { APIRoute } from "astro";
-import { readingToMarkdown } from "../lib/reading";
+import { getEntry } from "astro:content";
 
-// Markdown twin of /reading/, for LLMs and agents.
-export const GET: APIRoute = () =>
-  new Response(readingToMarkdown(), {
+export const GET: APIRoute = async () => {
+  const page = await getEntry("pages", "reading");
+  if (!page) throw new Error("Missing reading page");
+  return new Response(`# ${page.data.title}\n\n> ${page.data.description}\n\n${page.body}`, {
     headers: { "Content-Type": "text/markdown; charset=utf-8" },
   });
+};

@@ -3,14 +3,16 @@ import Base from "../layouts/Base.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import { getPosts } from "../lib/posts";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { getEntry, render } from "astro:content";
 
 const posts = await getPosts();
+const home = await getEntry("pages", "home");
+if (!home) throw new Error("Missing home page");
+const { Content } = await render(home);
 ---
 
 <Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <p class="intro">
-  Hi, I'm Vinicius - most people just call me Vini. I'm a software engineer, these days building the backbone for agentic AI at <a href="https://crewai.com">CrewAI</a>. I'm based in beautiful Curitiba, Brazil but spend half the year <a href="/travel/">somewhere else in the world</a>. Outside work, you'll find me at a piano or reading a <a href="/reading/">book</a>. I write here about building software, AI, and <a href="/on-asking-why/">the curious life</a> around it.
-  </p>
+  <div class="intro"><Content /></div>
 
   {
     posts.length === 0 ? (
