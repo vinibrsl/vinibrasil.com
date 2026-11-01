@@ -1,0 +1,338 @@
+---
+const points = [
+  [105, 160, 100, 180],
+  [174, 120, 164, 180],
+  [205, 205, 164, 244],
+  [120, 250, 100, 244],
+  [300, 110, 288, 180],
+  [380, 150, 352, 180],
+  [355, 235, 352, 244],
+  [275, 205, 288, 244],
+  [460, 225, 476, 244],
+  [510, 160, 476, 180],
+  [565, 205, 540, 180],
+  [540, 290, 540, 244],
+];
+const edges = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 0],
+  [4, 5],
+  [5, 6],
+  [6, 7],
+  [7, 4],
+  [8, 9],
+  [9, 10],
+  [10, 11],
+  [11, 8],
+  [2, 7],
+  [6, 8],
+];
+const curve = (a, b) => {
+  const [x, y] = points[a];
+  const [u, v] = points[b];
+  return `M ${x} ${y} C ${x + (u - x) * 0.2 - 18} ${y + (v - y) * 0.7} ${x + (u - x) * 0.8 + 18} ${y + (v - y) * 0.3} ${u} ${v}`;
+};
+const trace = (a, b) => {
+  const [, , x, y] = points[a];
+  const [, , u, v] = points[b];
+  return `M ${x} ${y} C ${x} ${y} ${u} ${v} ${u} ${v}`;
+};
+---
+
+<div class="conway">
+  <svg
+    class="diagram"
+    viewBox="0 65 640 300"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern
+        id="conway-grid"
+        width="16"
+        height="16"
+        patternUnits="userSpaceOnUse"
+      >
+        <circle cx="4" cy="4" r="0.7" fill="currentColor" />
+      </pattern>
+      <linearGradient id="conway-sweep">
+        <stop stop-color="currentColor" stop-opacity="0" />
+        <stop offset="1" stop-color="currentColor" stop-opacity="0.12" />
+      </linearGradient>
+    </defs>
+
+    <rect
+      class="grid"
+      x="40"
+      y="92"
+      width="560"
+      height="256"
+      fill="url(#conway-grid)"
+    />
+    <g class="enclosures">
+      {[72, 260, 448].map((x) => (
+        <g>
+          <rect
+            class="enclosure"
+            x={x}
+            y="152"
+            width="120"
+            height="120"
+            rx="4"
+          />
+          <path
+            class="corner"
+            d={`M ${x - 5} 163 V 147 H ${x + 11} M ${x + 109} 277 H ${x + 125} V 261`}
+          />
+        </g>
+      ))}
+    </g>
+
+    {edges.map(([a, b], i) => (
+      <g
+        style={`--organic:path('${curve(a, b)}');--built:path('${trace(a, b)}');--delay:${i * -0.31}s`}
+      >
+        <path class:list={["connection", { bridge: i > 11 }]} d={curve(a, b)} />
+        <path class="message" d={curve(a, b)} pathLength="100" />
+      </g>
+    ))}
+
+    {points.map(([x, y, u, v], i) => (
+      <g
+        class="point"
+        style={`--x:${x}px;--y:${y}px;--u:${u}px;--v:${v}px;--delay:${i * -0.43}s`}
+      >
+        <g class="people-copy">
+          <circle class="ripple" r="16" />
+        </g>
+        <rect class="person" x="-5" y="-5" width="10" height="10" rx="5" />
+        <g class="pins">
+          <path d="M -12 -3 H -7 M -12 3 H -7 M 7 -3 H 12 M 7 3 H 12 M -3 -12 V -7 M 3 -12 V -7 M -3 7 V 12 M 3 7 V 12" />
+        </g>
+      </g>
+    ))}
+
+    <g class="sweep">
+      <rect
+        x="-100"
+        y="94"
+        width="100"
+        height="246"
+        fill="url(#conway-sweep)"
+      />
+      <path d="M 0 94 V 340" />
+      <text class="beam-label" x="10" y="118" transform="rotate(90 10 118)">
+        CONWAY’S LAW
+      </text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .conway {
+    --diagram-max: 680px;
+    color: var(--accent);
+  }
+  .conway svg {
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  text {
+    fill: currentColor;
+  }
+  .beam-label {
+    font-family: var(--font-mark);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+  .connection,
+  .message,
+  .enclosure,
+  .corner,
+  .pins,
+  .ripple,
+  .sweep path {
+    fill: none;
+    stroke: currentColor;
+  }
+  .connection {
+    stroke-width: 1.2;
+    stroke-opacity: 0.35;
+  }
+  .bridge {
+    stroke-dasharray: 3 5;
+    stroke-opacity: 0.22;
+  }
+  .connection,
+  .message {
+    animation: conway-wire 12s ease-in-out infinite;
+  }
+  .message {
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 2 98;
+    animation:
+      conway-wire 12s ease-in-out infinite,
+      conway-message 2.8s linear infinite;
+    animation-delay: 0s, var(--delay);
+  }
+  .point {
+    animation: conway-settle 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .person {
+    fill: currentColor;
+    animation: conway-chip 12s ease-in-out infinite;
+  }
+  .ripple {
+    stroke-width: 0.8;
+    animation: conway-ripple 3s ease-out infinite;
+    animation-delay: var(--delay);
+  }
+  .pins,
+  .enclosures,
+  .grid {
+    animation: conway-build 12s ease-in-out infinite;
+  }
+  .pins {
+    stroke-width: 1;
+  }
+  .enclosure {
+    fill: currentColor;
+    fill-opacity: 0.025;
+    stroke-opacity: 0.2;
+  }
+  .corner {
+    stroke-opacity: 0.6;
+  }
+  .grid {
+    opacity: 0.3;
+  }
+  .people-copy {
+    animation: conway-human 12s ease-in-out infinite;
+  }
+  .sweep {
+    animation: conway-sweep 12s linear infinite;
+  }
+  .sweep path {
+    stroke-opacity: 0.5;
+  }
+  @keyframes conway-wire {
+    0%,
+    25%,
+    100% {
+      d: var(--organic);
+    }
+    48%,
+    82% {
+      d: var(--built);
+    }
+  }
+  @keyframes conway-settle {
+    0%,
+    25%,
+    100% {
+      transform: translate(var(--x), var(--y));
+    }
+    48%,
+    82% {
+      transform: translate(var(--u), var(--v));
+    }
+  }
+  @keyframes conway-chip {
+    0%,
+    25%,
+    100% {
+      rx: 5px;
+      transform: scale(1);
+    }
+    48%,
+    82% {
+      rx: 1px;
+      transform: scale(1.4);
+    }
+  }
+  @keyframes conway-message {
+    to {
+      stroke-dashoffset: -100;
+    }
+  }
+  @keyframes conway-ripple {
+    from {
+      transform: scale(0.4);
+      opacity: 0.5;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+  @keyframes conway-build {
+    0%,
+    30%,
+    96%,
+    100% {
+      opacity: 0;
+    }
+    50%,
+    82% {
+      opacity: 1;
+    }
+  }
+  @keyframes conway-human {
+    0%,
+    25%,
+    100% {
+      opacity: 1;
+    }
+    38%,
+    90% {
+      opacity: 0;
+    }
+  }
+  @keyframes conway-sweep {
+    0%,
+    28% {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    52% {
+      transform: translateX(600px);
+      opacity: 1;
+    }
+    54%,
+    100% {
+      transform: translateX(600px);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .conway svg * {
+      animation: none;
+    }
+    .point {
+      transform: translate(var(--u), var(--v));
+    }
+    .connection,
+    .message {
+      d: var(--built);
+    }
+    .person {
+      rx: 1px;
+      transform: scale(1.4);
+    }
+    .people-copy,
+    .sweep,
+    .ripple {
+      display: none;
+    }
+  }
+</style>
