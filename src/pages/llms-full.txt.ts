@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getPosts, postToMarkdown } from "../lib/posts";
+import { getPosts, postToMarkdown, toPlainMarkdown } from "../lib/posts";
 import { getEntry } from "astro:content";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 
@@ -19,7 +19,7 @@ export const GET: APIRoute = async () => {
     "",
     ...posts.map(postToMarkdown),
     `# ${reading.data.title}\n\n> ${reading.data.description}\n\n${reading.body}`,
-    `# ${travel.data.title}\n\n> ${travel.data.description}\n\n${travel.body}`,
+    `# ${travel.data.title}\n\n> ${travel.data.description}\n\n${toPlainMarkdown(travel.body)}`,
   ].join("\n");
 
   return new Response(body, {

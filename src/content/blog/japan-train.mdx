@@ -5,6 +5,9 @@ pubDate: 2026-11-01
 ---
 
 import Conway from "../../components/diagrams/Conway.astro";
+import Figure from "../../components/Figure.astro";
+import yahoo from "../../assets/images/yahoo-japan.jpg";
+import jrWest from "../../assets/images/japan-train/jr-west-reservation.png";
 
 What's a software engineer supposed to do while on vacation? Observe how different cultures use and design software, of course!
 
@@ -12,43 +15,23 @@ Coming from South America, visiting Asia is like stepping into a different world
 
 Interestingly, Japanese software also feels like stepping into a different world. Open [yahoo.co.jp](https://www.yahoo.co.jp/) and you'll be transported back to the 90s. Or [rakuten.co.jp](https://www.rakuten.co.jp/), and you'll be exposed to product offers with an overwhelming amount of information. Or try to book a train online...
 
-<figure class="fig">
-  <a href="/images/yahoo-japan.jpg" aria-label="View the full-size Yahoo Japan screenshot">
-    <img
-      src="/images/yahoo-japan.jpg"
-      alt="Yahoo Japan's homepage, with tightly packed news headlines, service links, weather, and advertising in three columns."
-      width="1280"
-      height="900"
-      loading="lazy"
-      decoding="async"
-    />
-  </a>
-  <figcaption class="fig-cap">
-    <span class="fig-num">FIG.</span>
-    <a href="https://www.yahoo.co.jp/">Yahoo! Japan</a> is just like traveling in time.
-  </figcaption>
-</figure>
+<Figure
+  src={yahoo}
+  alt="Yahoo Japan's homepage, with tightly packed news headlines, service links, weather, and advertising in three columns."
+>
+  <a href="https://www.yahoo.co.jp/">Yahoo! Japan</a> is just like traveling in time.
+</Figure>
 
 Japanese trains are certainly an engineering marvel, but booking a ticket online isn't quite the same experience. I remember using ChatGPT to figure out all the different fields and checkboxes I had to fill out. For example: "When boarding the train, you will need basic fare ticket or IC card such as Suica in addition to Super (Limited) Express Train ticket." I thought I was buying a train ticket online. Why would I need another fare?!
 
 Not to mention that Japan's JR railway network is divided into six regional passenger companies: JR Hokkaido, JR East, JR West, JR Central, JR Shikoku, and JR Kyushu. They have different booking platforms, overlapping coverage, and different rules. And guess who needs to figure out which platform to use? The user.
 
-<figure class="fig">
-  <a href="/images/japan-train/jr-west-reservation.png" aria-label="View the full-size JR-West train reservation screenshot">
-    <img
-      src="/images/japan-train/jr-west-reservation.png"
-      alt="JR-West's train reservation page, with separate options for discounted passes, regular tickets, and reserving by selecting a train or station."
-      width="552"
-      height="480"
-      loading="lazy"
-      decoding="async"
-    />
-  </a>
-  <figcaption class="fig-cap">
-    <span class="fig-num">FIG.</span>
-    JR-West separates ticket booking into several paths and ticket types.
-  </figcaption>
-</figure>
+<Figure
+  src={jrWest}
+  alt="JR-West's train reservation page, with separate options for discounted passes, regular tickets, and reserving by selecting a train or station."
+>
+  JR-West separates ticket booking into several paths and ticket types.
+</Figure>
 
 The most frustrating experience I had was booking a ticket online, only to get a message after confirmation: "You'll need the physical credit card to retrieve your ticket at the station." But of course, I had used a virtual credit card. So I had to cancel the booking, pay a fee of ¥560 per person, and rebook with a physical credit card.
 

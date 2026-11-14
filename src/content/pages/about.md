@@ -13,7 +13,7 @@ I like working close to the product and the code: taking vague problems, designi
 
 **Who am I outside of work?**
 
-![Camila and me at Lake Louise](/about-family.jpeg)
+![Camila and me at Lake Louise](../../assets/about-family.jpeg)
 
 I'm a Christian, married to Camila, and a theologian. I also love music. I play the piano and guitar, and I sing. Lately, I've been learning Koine Greek.
 

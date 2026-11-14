@@ -3,62 +3,20 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import rehypeMermaid from "rehype-mermaid";
+import rehypeFigure from "@microflash/rehype-figure";
+import { visit } from "unist-util-visit";
+import { cp } from "node:fs/promises";
 
 // Update this to your production domain before deploying.
 export const SITE = "https://vinibrasil.com";
 
-/**
- * rehype plugin: turn each post image into a technical figure —
- *   <figure class="fig"><img><figcaption>FIG.  alt text</figcaption></figure>
- * Markdown renders a lone image as <p><img></p>; we replace that whole
- * paragraph so the markup stays valid.
- */
-function rehypeFigures() {
-  const isImg = (n) => n && n.type === "element" && n.tagName === "img";
-  const meaningful = (nodes = []) =>
-    nodes.filter((n) => !(n.type === "text" && /^\s*$/.test(n.value)));
-
+function rehypeImageSizes() {
   return (tree) => {
-    const figure = (img) => {
-      const alt = (img.properties && img.properties.alt) || "";
-      return {
-        type: "element",
-        tagName: "figure",
-        properties: { className: ["fig"] },
-        children: [
-          img,
-          {
-            type: "element",
-            tagName: "figcaption",
-            properties: { className: ["fig-cap"] },
-            children: [
-              {
-                type: "element",
-                tagName: "span",
-                properties: { className: ["fig-num"] },
-                children: [{ type: "text", value: "FIG." }],
-              },
-              ...(alt ? [{ type: "text", value: ` ${alt}` }] : []),
-            ],
-          },
-        ],
-      };
-    };
-
-    const walk = (node) => {
-      if (!node.children) return;
-      node.children = node.children.map((child) => {
-        if (isImg(child)) return figure(child);
-        // a paragraph wrapping only an image → replace the paragraph
-        if (child.type === "element" && child.tagName === "p") {
-          const kids = meaningful(child.children);
-          if (kids.length === 1 && isImg(kids[0])) return figure(kids[0]);
-        }
-        walk(child);
-        return child;
-      });
-    };
-    walk(tree);
+    visit(tree, { tagName: "img" }, (node) => {
+      node.properties.sizes =
+        "(min-width: 672px) 608px, calc(100vw - clamp(40px, 10vw, 64px))";
+      if (node.properties.src.endsWith(".png")) node.properties.quality = 90;
+    });
   };
 }
 
@@ -123,14 +81,31 @@ export default defineConfig({
   // mdx() inherits the markdown config below (rehype figures/mermaid, Shiki
   // theme), so .md and .mdx posts render identically — .mdx just adds the
   // ability to import components (see src/components/diagrams/).
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    sitemap(),
+    {
+      name: "source-images",
+      hooks: {
+        "astro:build:done": async ({ dir }) => {
+          await cp(new URL("./src/assets/", import.meta.url), dir, {
+            recursive: true,
+          });
+        },
+      },
+    },
+  ],
+  image: {
+    layout: "constrained",
+  },
   markdown: {
     // Render ```mermaid blocks to inline SVG at build time (Playwright);
     // ships zero client JS. Shiki must skip the language so the plugin sees
     // a plain <code class="language-mermaid"> to transform.
     syntaxHighlight: { type: "shiki", excludeLangs: ["mermaid"] },
     rehypePlugins: [
-      rehypeFigures,
+      rehypeImageSizes,
+      [rehypeFigure, { className: "fig" }],
       // Neutral base; all palette/blue theming lives in one CSS block
       // (.post-body svg[id^="mermaid-"] …) in global.css. Mermaid sizes each
       // label box to the font it lays out with, so we render at build time

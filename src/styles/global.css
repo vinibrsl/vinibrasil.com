@@ -372,7 +372,6 @@ main {
   height: auto;
   display: block;
 }
-/* technical figure (see rehypeFigures in astro.config.mjs) */
 .post-body .fig {
   margin: 2.75rem 0;
   border: 1px solid var(--border);
@@ -380,7 +379,7 @@ main {
 .post-body .fig img {
   border-bottom: 1px solid var(--border);
 }
-.fig-cap {
+:is(.fig, .embed) > figcaption {
   display: block;
   padding: 0.55rem 0.75rem;
   font-family: var(--font-mark);
@@ -390,9 +389,14 @@ main {
   text-transform: uppercase;
   color: var(--muted);
 }
-.fig-num {
+:is(.fig, .embed) > figcaption::before {
+  content: "FIG.";
   color: var(--accent);
   margin-right: 0.5rem;
+}
+:is(.fig, .embed) > figcaption > p {
+  display: inline;
+  margin: 0;
 }
 
 /* ── diagrams (components/diagrams/*.astro) ──────────────────────────

@@ -1,5 +1,6 @@
 import { chromium } from "playwright";
-import { readFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, mkdirSync, existsSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -7,6 +8,8 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const blogDir = path.join(root, "src/content/blog");
 const fontDir = path.join(root, "public/fonts");
 const outDir = path.join(root, "public/og");
+const cacheDir = path.join(root, ".cache/og");
+const cacheFile = path.join(cacheDir, "hashes.json");
 
 const SITE_TITLE = "Vinicius Brasil";
 const WIDTH = 1200;
@@ -41,14 +44,25 @@ const esc = (s = "") =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-function firstImage(raw) {
+function firstImage(raw, file) {
   const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, "");
-  const match = body.match(/!\[[^\]]*\]\((\/[^\s)]+)\)|<img\b[^>]*\bsrc=["'](\/[^"']+)["']/);
+  const match = body.match(
+    /!\[[^\]]*\]\(([^\s)]+)\)|<img\b[^>]*\bsrc=["'](\/[^"']+)["']|<Figure\b[^>]*\bsrc=\{(\w+)\}/,
+  );
   if (!match) return "";
-  const src = match[1] || match[2];
+  const imports = Object.fromEntries(
+    [...body.matchAll(/^import (\w+) from ["']([^"']+)["']/gm)].map(
+      ([, name, source]) => [name, source],
+    ),
+  );
+  const src = match[1] || match[2] || imports[match[3]];
+  if (URL.canParse(src)) return "";
   const extension = path.extname(src).slice(1).toLowerCase();
   const mime = extension === "jpg" ? "jpeg" : extension;
-  const data = readFileSync(path.join(root, "public", src)).toString("base64");
+  const source = src.startsWith("/")
+    ? path.join(root, "src/assets", src)
+    : path.resolve(blogDir, path.dirname(file), src);
+  const data = readFileSync(source).toString("base64");
   return `data:image/${mime};base64,${data}`;
 }
 
@@ -105,8 +119,26 @@ async function main() {
     cards.push({
       slug: file.replace(/\.(md|mdx)$/, ""),
       title: fm.title || "Untitled",
-      image: firstImage(raw),
+      image: firstImage(raw, file),
     });
+  }
+
+  const cached = existsSync(cacheFile)
+    ? JSON.parse(readFileSync(cacheFile, "utf8"))
+    : {};
+  const hashes = {};
+  const pending = cards.flatMap((card) => {
+    const html = template(card);
+    const hash = createHash("sha256").update(html).digest("hex");
+    hashes[card.slug] = hash;
+    const out = path.join(outDir, `${card.slug}.png`);
+    return cached[card.slug] === hash && existsSync(out)
+      ? []
+      : [{ slug: card.slug, html, out }];
+  });
+  if (pending.length === 0) {
+    console.log("og: all cards are up to date");
+    return;
   }
 
   const browser = await chromium.launch();
@@ -115,15 +147,16 @@ async function main() {
     deviceScaleFactor: 1,
   });
 
-  for (const card of cards) {
-    await page.setContent(template(card), { waitUntil: "networkidle" });
+  for (const card of pending) {
+    await page.setContent(card.html, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
-    const out = path.join(outDir, `${card.slug}.png`);
-    await page.screenshot({ path: out, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT } });
+    await page.screenshot({ path: card.out, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT } });
     console.log(`og: ${card.slug}.png`);
   }
 
   await browser.close();
+  mkdirSync(cacheDir, { recursive: true });
+  writeFileSync(cacheFile, JSON.stringify(hashes));
 }
 
 main().catch((err) => {

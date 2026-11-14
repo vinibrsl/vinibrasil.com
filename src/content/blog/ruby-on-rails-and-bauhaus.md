@@ -13,7 +13,7 @@ applied to software engineering at last.
 
 ## Back to 2004
 
-![Web development in 2004 — enterprise stacks and heavyweight frameworks](/images/ruby-on-rails-and-bauhaus/2004-web-dev.jpeg)
+![Web development in 2004 — enterprise stacks and heavyweight frameworks](../../assets/images/ruby-on-rails-and-bauhaus/2004-web-dev.jpeg)
 
 2004 was the year Facebook was born, Firefox was on the rise, iPods were
 everywhere, and blogging took off. Web development back then was all about
@@ -31,7 +31,7 @@ plenty of reasons to flop:
 
 ## Back to the 1920s
 
-![The Bauhaus school — form follows function](/images/ruby-on-rails-and-bauhaus/bauhaus.jpeg)
+![The Bauhaus school — form follows function](../../assets/images/ruby-on-rails-and-bauhaus/bauhaus.jpeg)
 
 Bauhaus was founded in 1919, and it was way ahead of its time. It grew into
 one of the biggest cultural movements of the 20th century. Bauhaus wasn't just
@@ -54,7 +54,7 @@ design-first mentality has a lot in common with Bauhaus.
 > Simple interfaces are easier to use, understand, and maintain than flashy
 > counterparts. Usability should take precedence over cool.
 
-![37signals and its design-first philosophy](/images/ruby-on-rails-and-bauhaus/37signals.jpeg)
+![37signals and its design-first philosophy](../../assets/images/ruby-on-rails-and-bauhaus/37signals.jpeg)
 
 ## The Rails boom
 
@@ -64,7 +64,7 @@ design-first mentality has a lot in common with Bauhaus.
       title="Create a blog in 15 minutes with Ruby on Rails"
       loading="lazy" allowfullscreen></iframe>
   </div>
-  <figcaption class="fig-cap"><span class="fig-num">FIG.</span> DHH builds a
+  <figcaption>DHH builds a
   blog engine in 15 minutes with Ruby on Rails (2005)</figcaption>
 </figure>
 
@@ -83,7 +83,7 @@ programming language of the year, according to the TIOBE Index. This mid-90s
 Japanese language, never even intended for this kind of use, would become a
 web standard.
 
-![Ruby's climb up the TIOBE Index](/images/ruby-on-rails-and-bauhaus/ruby-tiobe.png)
+![Ruby's climb up the TIOBE Index](../../assets/images/ruby-on-rails-and-bauhaus/ruby-tiobe.png)
 
 > I knew Python then. But I didn't like it, because I didn't think it was a
 > true object-oriented language — OO features appeared to be an add-on.
@@ -101,7 +101,7 @@ no-nonsense approach to software development:
 
 ## Footprints
 
-![Rails' fingerprints — from Laravel to Phoenix](/images/ruby-on-rails-and-bauhaus/footprints.jpeg)
+![Rails' fingerprints — from Laravel to Phoenix](../../assets/images/ruby-on-rails-and-bauhaus/footprints.jpeg)
 
 Bauhaus was a rebel in its time, just like Rails. The school's influence can
 be seen everywhere, from Apple to Nike. Rails' philosophy has also shaped

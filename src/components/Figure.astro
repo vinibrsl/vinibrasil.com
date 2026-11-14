@@ -1,12 +1,9 @@
 ---
-// A technical figure: an image above a FIG. caption.
-//
-// This is the canonical figure markup for anything built in Astro. Posts get
-// the same structure from the rehypeFigures plugin (astro.config.mjs), which
-// must build it as hast since markdown can't instantiate a component — keep
-// the two in sync.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
 interface Props {
-  src: string;
+  src: ImageMetadata;
   alt: string;
   /** Caption text after the FIG. tag; falls back to the alt text. */
   caption?: string;
@@ -15,13 +12,25 @@ interface Props {
   loading?: "lazy" | "eager";
 }
 
-const { src, alt, caption, class: className, loading = "lazy" } = Astro.props;
+const {
+  src,
+  alt,
+  caption,
+  class: className,
+  loading,
+} = Astro.props;
+const image = {
+  src,
+  alt,
+  loading,
+  sizes: "(min-width: 672px) 608px, calc(100vw - clamp(40px, 10vw, 64px))",
+  quality: src.format === "png" ? 90 : undefined,
+};
 ---
 
 <figure class:list={["fig", className]}>
-  <img src={src} alt={alt} loading={loading} decoding="async" />
-  <figcaption class="fig-cap">
-    <span class="fig-num">FIG.</span>
-    {caption ?? alt}
+  <Image {...image} />
+  <figcaption>
+    <slot>{caption ?? alt}</slot>
   </figcaption>
 </figure>

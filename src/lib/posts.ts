@@ -24,7 +24,17 @@ export function formatDate(date: Date): string {
 // other Markdown consumers: ES imports and the self-closing diagram
 // components (<BookLLM />) that only carry visual meaning.
 export function toPlainMarkdown(body = ""): string {
+  const imports = Object.fromEntries(
+    [...body.matchAll(/^import (\w+) from ["']([^"']+)["']/gm)].map(
+      ([, name, source]) => [name, source],
+    ),
+  );
   return body
+    .replace(
+      /<Figure\b[^>]*src=\{(\w+)\}[^>]*alt="([^"]*)"[^>]*>[\s\S]*?<\/Figure>/g,
+      (_, source, alt) => `![${alt}](${imports[source]})`,
+    )
+    .replace(/(\]\()\.\.\/\.\.\/assets\//g, "$1/")
     .replace(/^import\s.+?$/gm, "")
     .replace(/^\s*<[A-Z][\w.]*\s*\/>\s*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")

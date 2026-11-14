@@ -2,7 +2,7 @@
   // Static Astro site on Cloudflare Workers Static Assets — no Worker script,
   // so requests are served directly from the asset server with zero compute.
   // The www → apex 301 is handled by a Cloudflare Redirect Rule at the edge.
-  // Build with `npm run build` (writes ./dist), then `npm run deploy`.
+  // Deploy with `make deploy`.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "vinibrsl-blog",
   "compatibility_date": "2026-06-14",
