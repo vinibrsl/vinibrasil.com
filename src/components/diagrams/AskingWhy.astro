@@ -115,7 +115,7 @@ const pipKeyframes = pips
 ---
 
 <svg
-  class="aw diagram"
+  class="aw diagram max-w-[600px]"
   viewBox="0 0 760 500"
   role="img"
   aria-labelledby="aw-title aw-desc"
@@ -124,47 +124,45 @@ const pipKeyframes = pips
   <title id="aw-title">Asking why peels back the layers of abstraction</title>
   <desc id="aw-desc">
     Four nested rectangles, newest to oldest: HTTP/3 on the outside, then
-    HTTP/2, HTTP/1.1, and HTTP/0.9, with an origin marker at the centre. A
-    probe labelled "why?" drills inward along the middle; each layer lights up
-    as the question reaches it and stays lit, knowledge accumulating ring by
-    ring, until the question arrives at the first decision everything else was
-    copied forward from.
+    HTTP/2, HTTP/1.1, and HTTP/0.9, with an origin marker at the centre. A probe
+    labelled "why?" drills inward along the middle; each layer lights up as the
+    question reaches it and stays lit, knowledge accumulating ring by ring,
+    until the question arrives at the first decision everything else was copied
+    forward from.
   </desc>
 
   <!-- the path the question drills along -->
   <line class="drill" x1={PROBE_X} y1={cy} x2={cx} y2={cy}></line>
 
   <!-- nested abstractions; each lights and stays lit as the probe crosses it -->
-  {
-    layers.map((l, i) => (
-      <g class="layer">
-        <rect
-          class="ring"
-          x={l.x.toFixed(1)}
-          y={l.y.toFixed(1)}
-          width={l.w}
-          height={l.h}
-          rx="4"
-          style={`animation-name: aw-ring-${i}`}
-        />
-        <circle
-          class="keep"
-          cx={(l.x + 9).toFixed(1)}
-          cy={(l.y - 11).toFixed(1)}
-          r="3.2"
-          style={`animation-name: aw-keep-${i}; transform-origin: ${(l.x + 9).toFixed(1)}px ${(l.y - 11).toFixed(1)}px`}
-        />
-        <text
-          class="ring-label"
-          x={(l.x + 18).toFixed(1)}
-          y={(l.y - 7).toFixed(1)}
-          style={`animation-name: aw-label-${i}`}
-        >
-          {l.label}
-        </text>
-      </g>
-    ))
-  }
+  {layers.map((l, i) => (
+    <g class="layer">
+      <rect
+        class="ring"
+        x={l.x.toFixed(1)}
+        y={l.y.toFixed(1)}
+        width={l.w}
+        height={l.h}
+        rx="4"
+        style={`animation-name: aw-ring-${i}`}
+      />
+      <circle
+        class="keep"
+        cx={(l.x + 9).toFixed(1)}
+        cy={(l.y - 11).toFixed(1)}
+        r="3.2"
+        style={`animation-name: aw-keep-${i}; transform-origin: ${(l.x + 9).toFixed(1)}px ${(l.y - 11).toFixed(1)}px`}
+      />
+      <text
+        class="ring-label font-display text-xs tracking-wide"
+        x={(l.x + 18).toFixed(1)}
+        y={(l.y - 7).toFixed(1)}
+        style={`animation-name: aw-label-${i}`}
+      >
+        {l.label}
+      </text>
+    </g>
+  ))}
 
   <!-- the origin: the first why, lit last -->
   <g class="core" style={`transform-origin: ${cx}px ${cy}px`}>
@@ -175,36 +173,54 @@ const pipKeyframes = pips
 
   <!-- the knowledge meter: fills a cell as each layer is kept -->
   <g class="meter">
-    <text class="meter-label" x={cx} y={PIP.y - 10} text-anchor="middle">KNOWLEDGE KEPT</text>
-    {
-      pips.map((p, i) => (
-        <g>
-          <rect
-            class="pip-cell"
-            x={p.x}
-            y={PIP.y}
-            width={PIP.w}
-            height={PIP.h}
-            rx="2"
-          />
-          <rect
-            class="pip-fill"
-            x={p.x}
-            y={PIP.y}
-            width={PIP.w}
-            height={PIP.h}
-            rx="2"
-            style={`animation-name: aw-pip-${i}`}
-          />
-        </g>
-      ))
-    }
+    <text
+      class="meter-label font-display text-xs tracking-widest"
+      x={cx}
+      y={PIP.y - 10}
+      text-anchor="middle"
+    >
+      KNOWLEDGE KEPT
+    </text>
+    {pips.map((p, i) => (
+      <g>
+        <rect
+          class="pip-cell"
+          x={p.x}
+          y={PIP.y}
+          width={PIP.w}
+          height={PIP.h}
+          rx="2"
+        />
+        <rect
+          class="pip-fill"
+          x={p.x}
+          y={PIP.y}
+          width={PIP.w}
+          height={PIP.h}
+          rx="2"
+          style={`animation-name: aw-pip-${i}`}
+        />
+      </g>
+    ))}
   </g>
 
   <!-- the question, drilling inward -->
   <g class="probe">
-    <circle class="probe-dot" cx={cx} cy={cy} r="6" style={`--aw-x:${PROBE_X - cx}px`}></circle>
-    <text class="probe-label" x={(cx + 16).toFixed(1)} y={(cy + 4).toFixed(1)} style={`--aw-x:${PROBE_X - cx}px`}>WHY?</text>
+    <circle
+      class="probe-dot"
+      cx={cx}
+      cy={cy}
+      r="6"
+      style={`--aw-x:${PROBE_X - cx}px`}
+    ></circle>
+    <text
+      class="probe-label font-display text-xs tracking-widest"
+      x={(cx + 16).toFixed(1)}
+      y={(cy + 4).toFixed(1)}
+      style={`--aw-x:${PROBE_X - cx}px`}
+    >
+      WHY?
+    </text>
   </g>
 </svg>
 
@@ -213,10 +229,6 @@ const pipKeyframes = pips
 <style set:html={keyframes + coreKeyframes + pipKeyframes}></style>
 
 <style>
-  .aw {
-    max-width: 600px;
-  }
-
   .aw .drill {
     stroke: var(--accent);
     stroke-width: 1;
@@ -247,9 +259,6 @@ const pipKeyframes = pips
 
   .aw .ring-label {
     fill: var(--muted);
-    font-family: var(--font-mark, monospace);
-    font-size: 13px;
-    letter-spacing: 0.06em;
     animation-duration: var(--aw-d, 5s);
     animation-timing-function: ease-out;
     animation-iteration-count: infinite;
@@ -273,9 +282,6 @@ const pipKeyframes = pips
   /* the knowledge meter */
   .aw .meter-label {
     fill: var(--muted);
-    font-family: var(--font-mark, monospace);
-    font-size: 11px;
-    letter-spacing: 0.14em;
   }
   .aw .pip-cell {
     fill: none;
@@ -302,9 +308,6 @@ const pipKeyframes = pips
   }
   .aw .probe-label {
     fill: var(--accent);
-    font-family: var(--font-mark, monospace);
-    font-size: 13px;
-    letter-spacing: 0.1em;
   }
 
   @keyframes aw-probe {

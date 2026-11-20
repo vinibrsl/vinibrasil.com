@@ -27,18 +27,16 @@ const { title, description, pubDate, updatedDate } = post.data;
 >
   <ScrollRail headings={headings} />
   <article class="post">
-    <header class="post-header">
-      <div class="post-eyebrow">
+    <header class="mb-6">
+      <div class="mb-4 flex flex-wrap items-center gap-2.5">
         <FormattedDate date={pubDate} />
       </div>
       <h1>{title}</h1>
-      {
-        updatedDate && (
-          <p class="label" style="margin-top:1rem">
-            Updated <FormattedDate date={updatedDate} />
-          </p>
-        )
-      }
+      {updatedDate && (
+        <p class="label mt-4">
+          Updated <FormattedDate date={updatedDate} />
+        </p>
+      )}
     </header>
     <div class="post-body">
       <slot />

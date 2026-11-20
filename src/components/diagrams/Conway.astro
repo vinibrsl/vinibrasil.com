@@ -41,9 +41,9 @@ const trace = (a, b) => {
 };
 ---
 
-<div class="conway">
+<div class="conway text-accent">
   <svg
-    class="diagram"
+    class="diagram max-w-[680px]"
     viewBox="0 65 640 300"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +123,12 @@ const trace = (a, b) => {
         fill="url(#conway-sweep)"
       />
       <path d="M 0 94 V 340" />
-      <text class="beam-label" x="10" y="118" transform="rotate(90 10 118)">
+      <text
+        class="beam-label font-display text-xs tracking-widest"
+        x="10"
+        y="118"
+        transform="rotate(90 10 118)"
+      >
         CONWAY’S LAW
       </text>
     </g>
@@ -131,10 +136,6 @@ const trace = (a, b) => {
 </div>
 
 <style>
-  .conway {
-    --diagram-max: 680px;
-    color: var(--accent);
-  }
   .conway svg {
     overflow: hidden;
     margin-bottom: 0.5rem;
@@ -143,9 +144,6 @@ const trace = (a, b) => {
     fill: currentColor;
   }
   .beam-label {
-    font-family: var(--font-mark);
-    font-size: 11px;
-    letter-spacing: 0.16em;
     paint-order: stroke;
     stroke: var(--bg);
     stroke-width: 4px;

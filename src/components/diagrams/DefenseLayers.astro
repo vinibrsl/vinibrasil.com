@@ -115,7 +115,7 @@ const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
 ---
 
 <svg
-  class="dl diagram"
+  class="dl diagram max-w-[620px]"
   viewBox={`0 0 ${VB_W} ${VB_H}`}
   role="img"
   aria-labelledby="dl-title dl-desc"
@@ -131,29 +131,27 @@ const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
     bottom: an incident is a chain of causes, not one layer failing alone.
   </desc>
 
-  {
-    layers.map((l) => (
-      <g class="layer">
-        {gridLines(l.z).map((g) => (
-          <line
-            class="grid"
-            x1={S(g[0]).x.toFixed(1)}
-            y1={S(g[0]).y.toFixed(1)}
-            x2={S(g[1]).x.toFixed(1)}
-            y2={S(g[1]).y.toFixed(1)}
-          />
-        ))}
-        <path class="slab" fill-rule="evenodd" d={slabPath(l.z)} />
-        <text
-          class="layer-label"
-          x={labelAt(l).x.toFixed(1)}
-          y={labelAt(l).y.toFixed(1)}
-        >
-          {l.label}
-        </text>
-      </g>
-    ))
-  }
+  {layers.map((l) => (
+    <g class="layer">
+      {gridLines(l.z).map((g) => (
+        <line
+          class="grid"
+          x1={S(g[0]).x.toFixed(1)}
+          y1={S(g[0]).y.toFixed(1)}
+          x2={S(g[1]).x.toFixed(1)}
+          y2={S(g[1]).y.toFixed(1)}
+        />
+      ))}
+      <path class="slab" fill-rule="evenodd" d={slabPath(l.z)} />
+      <text
+        class="layer-label font-display text-xs tracking-wider"
+        x={labelAt(l).x.toFixed(1)}
+        y={labelAt(l).y.toFixed(1)}
+      >
+        {l.label}
+      </text>
+    </g>
+  ))}
 
   <!-- the incident: a change that found a path through every hole -->
   <g class="incident">
@@ -173,22 +171,26 @@ const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
       cx={St.x.toFixed(1)}
       cy={St.y.toFixed(1)}
       r="6"
-      style={`--dl-drop:${drop}px`}></circle>
-    <text class="end-label top" x={St.x.toFixed(1)} y={(St.y - 34).toFixed(1)}
-      >YOUR CHANGE</text
-    >
+      style={`--dl-drop:${drop}px`}
+    ></circle>
     <text
-      class="end-label bottom"
-      x={Sb.x.toFixed(1)}
-      y={(Sb.y + 38).toFixed(1)}>PRODUCTION</text
+      class="end-label top font-display text-xs tracking-widest uppercase"
+      x={St.x.toFixed(1)}
+      y={(St.y - 34).toFixed(1)}
     >
+      YOUR CHANGE
+    </text>
+    <text
+      class="end-label bottom font-display text-xs tracking-widest uppercase"
+      x={Sb.x.toFixed(1)}
+      y={(Sb.y + 38).toFixed(1)}
+    >
+      PRODUCTION
+    </text>
   </g>
 </svg>
 
 <style>
-  .dl {
-    max-width: 620px;
-  }
   .dl .grid {
     stroke: var(--accent);
     stroke-width: 0.75;
@@ -203,9 +205,6 @@ const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
   }
   .dl .layer-label {
     fill: var(--muted);
-    font-family: var(--font-mark, monospace);
-    font-size: 13px;
-    letter-spacing: 0.08em;
     dominant-baseline: central;
   }
   .dl .traj {
@@ -223,11 +222,7 @@ const labelAt = (l) => S(proj(N + 0.6, -0.4, l.z));
     animation: dl-fall 3.8s cubic-bezier(0.5, 0, 0.85, 0.4) infinite;
   }
   .dl .end-label {
-    font-family: var(--font-mark, monospace);
-    font-size: 12px;
-    letter-spacing: 0.14em;
     text-anchor: middle;
-    text-transform: uppercase;
   }
   .dl .end-label.top {
     fill: var(--muted);

@@ -1,5 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
+import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import rehypeMermaid from "rehype-mermaid";
@@ -78,6 +80,9 @@ const paperListing = {
 
 export default defineConfig({
   site: SITE,
+  vite: {
+    plugins: [tailwindcss()],
+  },
   // mdx() inherits the markdown config below (rehype figures/mermaid, Shiki
   // theme), so .md and .mdx posts render identically — .mdx just adds the
   // ability to import components (see src/components/diagrams/).
@@ -103,28 +108,30 @@ export default defineConfig({
     // ships zero client JS. Shiki must skip the language so the plugin sees
     // a plain <code class="language-mermaid"> to transform.
     syntaxHighlight: { type: "shiki", excludeLangs: ["mermaid"] },
-    rehypePlugins: [
-      rehypeImageSizes,
-      [rehypeFigure, { className: "fig" }],
-      // Neutral base; all palette/blue theming lives in one CSS block
-      // (.post-body svg[id^="mermaid-"] …) in global.css. Mermaid sizes each
-      // label box to the font it lays out with, so we render at build time
-      // with the SAME face the page displays (Departure Mono, loaded into the
-      // headless Chromium via `css`). Match the build font to the display font
-      // and the centering offsets Mermaid bakes in stay correct — otherwise
-      // labels drift inside their boxes.
-      [
-        rehypeMermaid,
-        {
-          strategy: "inline-svg",
-          css: new URL("./src/styles/mermaid-build.css", import.meta.url),
-          mermaidConfig: {
-            theme: "neutral",
-            fontFamily: '"Departure Mono", monospace',
+    processor: unified({
+      rehypePlugins: [
+        rehypeImageSizes,
+        [rehypeFigure, { className: "fig" }],
+        // Neutral base; all palette/blue theming lives in one CSS block
+        // (.post-body svg[id^="mermaid-"] …) in global.css. Mermaid sizes each
+        // label box to the font it lays out with, so we render at build time
+        // with the SAME face the page displays (Departure Mono, loaded into the
+        // headless Chromium via `css`). Match the build font to the display font
+        // and the centering offsets Mermaid bakes in stay correct — otherwise
+        // labels drift inside their boxes.
+        [
+          rehypeMermaid,
+          {
+            strategy: "inline-svg",
+            css: new URL("./src/styles/mermaid-build.css", import.meta.url),
+            mermaidConfig: {
+              theme: "neutral",
+              fontFamily: '"Departure Mono", monospace',
+            },
           },
-        },
+        ],
       ],
-    ],
+    }),
     shikiConfig: {
       // A flat paper listing keyed to the site's paper palette.
       theme: paperListing,

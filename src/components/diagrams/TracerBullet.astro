@@ -92,7 +92,7 @@ const D = 4.6; // loop seconds
 ---
 
 <svg
-  class="tb diagram"
+  class="tb diagram max-w-[620px]"
   viewBox="0 0 760 500"
   role="img"
   aria-labelledby="tb-title tb-desc"
@@ -110,53 +110,86 @@ const D = 4.6; // loop seconds
   <!-- legend -->
   <g class="legend">
     <rect class="swatch" x={FX} y="30" width="46" height="22" rx="2"></rect>
-    <path class="squiggle" d={hWave(FX + 5, FX + 41, 41, 5, 9)} fill="none"></path>
-    <text class="lab note" x={FX + 56} y="46">NOT YET IMPLEMENTED</text>
+    <path
+      class="squiggle"
+      d={hWave(FX + 5, FX + 41, 41, 5, 9)}
+      fill="none"
+    ></path>
+    <text
+      class="lab note font-display text-xs tracking-wide"
+      x={FX + 56}
+      y="46"
+    >
+      NOT YET IMPLEMENTED
+    </text>
   </g>
 
   <!-- the system -->
   <rect class="frame" x={FX} y={FY} width={FW} height={FH} rx="3"></rect>
 
   <!-- layers, each a column of "not yet implemented" with a working slice -->
-  {
-    cols.map((c) => (
-      <g class="layer">
-        <rect class="col" x={c.x.toFixed(1)} y={colTop} width={cw} height={colH} rx="4" />
-        <path class="squiggle" d={vWave(c.cx, colTop + 6, colBottom - 6, 22, 26)} fill="none" />
-        <rect class="slice-bg" x={c.x.toFixed(1)} y={(c.sy - sliceH / 2).toFixed(1)} width={cw} height={sliceH} />
-        <rect
-          class="slice"
-          x={c.x.toFixed(1)}
-          y={(c.sy - sliceH / 2).toFixed(1)}
-          width={cw}
-          height={sliceH}
-          style={`animation-delay:${(c.frac * FLY * D).toFixed(2)}s`}
-        />
-        <text
-          class="lab name"
-          x={c.cx.toFixed(1)}
-          y={(FY + FH + 22).toFixed(1)}
-          text-anchor="end"
-          transform={`rotate(-32 ${c.cx.toFixed(1)} ${(FY + FH + 22).toFixed(1)})`}
-        >
-          {c.label}
-        </text>
-      </g>
-    ))
-  }
+  {cols.map((c) => (
+    <g class="layer">
+      <rect
+        class="col"
+        x={c.x.toFixed(1)}
+        y={colTop}
+        width={cw}
+        height={colH}
+        rx="4"
+      />
+      <path
+        class="squiggle"
+        d={vWave(c.cx, colTop + 6, colBottom - 6, 22, 26)}
+        fill="none"
+      />
+      <rect
+        class="slice-bg"
+        x={c.x.toFixed(1)}
+        y={(c.sy - sliceH / 2).toFixed(1)}
+        width={cw}
+        height={sliceH}
+      />
+      <rect
+        class="slice"
+        x={c.x.toFixed(1)}
+        y={(c.sy - sliceH / 2).toFixed(1)}
+        width={cw}
+        height={sliceH}
+        style={`animation-delay:${(c.frac * FLY * D).toFixed(2)}s`}
+      />
+      <text
+        class="lab name font-display text-xs tracking-wide"
+        x={c.cx.toFixed(1)}
+        y={(FY + FH + 22).toFixed(1)}
+        text-anchor="end"
+        transform={`rotate(-32 ${c.cx.toFixed(1)} ${(FY + FH + 22).toFixed(1)})`}
+      >
+        {c.label}
+      </text>
+    </g>
+  ))}
 
   <!-- the tracer bullet: one shot through the whole stack -->
-  <line class="flight-halo" x1={ax0.toFixed(1)} y1={ay0.toFixed(1)} x2={bX.toFixed(1)} y2={bY.toFixed(1)}></line>
-  <line class="flight" x1={ax0.toFixed(1)} y1={ay0.toFixed(1)} x2={bX.toFixed(1)} y2={bY.toFixed(1)}></line>
+  <line
+    class="flight-halo"
+    x1={ax0.toFixed(1)}
+    y1={ay0.toFixed(1)}
+    x2={bX.toFixed(1)}
+    y2={bY.toFixed(1)}
+  ></line>
+  <line
+    class="flight"
+    x1={ax0.toFixed(1)}
+    y1={ay0.toFixed(1)}
+    x2={bX.toFixed(1)}
+    y2={bY.toFixed(1)}
+  ></line>
   <polygon class="flight-head" points={head}></polygon>
   <circle class="bullet" r="5" style={`offset-path:path('${flight}')`}></circle>
 </svg>
 
 <style>
-  .tb {
-    max-width: 620px;
-  }
-
   .tb .frame {
     fill: none;
     stroke: var(--accent);
@@ -218,16 +251,12 @@ const D = 4.6; // loop seconds
 
   /* labels */
   .tb .lab {
-    font-family: var(--font-mark, monospace);
     fill: var(--muted);
-    letter-spacing: 0.06em;
   }
   .tb .lab.name {
-    font-size: 13px;
     fill: var(--accent);
   }
   .tb .lab.note {
-    font-size: 13px;
     dominant-baseline: middle;
   }
   .tb .swatch {

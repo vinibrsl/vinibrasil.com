@@ -21,33 +21,42 @@ const { headings } = Astro.props;
 const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
-{
-  marks.length > 1 && (
-    <nav class="rail" aria-label="On this page">
-      <span class="rail-fill" aria-hidden="true" />
-      <span class="rail-playhead" aria-hidden="true" />
-      {marks.map((h) => (
-        <a class="rail-mark" href={`#${h.slug}`} data-depth={h.depth}>
-          <span class="rail-dot" aria-hidden="true" />
-          <span class="rail-lbl">{h.text}</span>
-        </a>
-      ))}
-    </nav>
-  )
-}
+{marks.length > 1 && (
+  <nav
+    class="rail fixed top-1/2 left-[clamp(0.75rem,3vw,2rem)] z-5 hidden h-[60vh] w-[11px] -translate-y-1/2 lg:block"
+    aria-label="On this page"
+  >
+    <span
+      class="rail-fill pointer-events-none absolute inset-0"
+      aria-hidden="true"
+    />
+    <span
+      class="rail-playhead pointer-events-none absolute left-0 z-2 h-0.5 w-[11px] -translate-y-px bg-accent"
+      aria-hidden="true"
+    />
+    {marks.map((h) => (
+      <a
+        class="rail-mark absolute left-[-3px] z-1 flex -translate-y-1/2 items-center gap-2 no-underline"
+        href={`#${h.slug}`}
+        data-depth={h.depth}
+      >
+        <span
+          class="rail-dot size-[7px] shrink-0 rounded-full border border-border bg-bg transition-[background-color,border-color] duration-[250ms]"
+          aria-hidden="true"
+        />
+        <span class="rail-lbl relative max-w-56 overflow-hidden text-ellipsis whitespace-nowrap bg-bg px-1 font-display text-xs tracking-wider text-muted uppercase transition-[color,opacity] duration-150 ease-in-out">
+          {h.text}
+        </span>
+      </a>
+    ))}
+  </nav>
+)}
 
 <style>
   /* the rail: a centred scale in the left gutter, built from the same
      drafting-rule recipe as .site-header — baseline + two end ticks + a
      measured minor-tick scale, rotated vertical. */
   .rail {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    left: clamp(0.75rem, 3vw, 2rem);
-    width: 11px;
-    height: 60vh;
-    z-index: 5;
     background-image:
       linear-gradient(var(--border), var(--border)),
       linear-gradient(var(--border), var(--border)),
@@ -73,9 +82,6 @@ const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   /* the read portion: the same minor scale in accent-blue, clipped from
      the bottom up to the scroll --progress. */
   .rail-fill {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
     background-image:
       linear-gradient(var(--accent), var(--accent)),
       repeating-linear-gradient(
@@ -95,54 +101,15 @@ const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
   /* fader playhead riding the leading edge */
   .rail-playhead {
-    position: absolute;
-    left: 0;
     top: var(--progress, 0%);
-    width: 11px;
-    height: 2px;
-    background: var(--accent);
-    transform: translateY(-1px);
-    z-index: 2;
-    pointer-events: none;
   }
 
   /* a heading mark: a node on the baseline + its text in the mono face.
      --at (0–1, set by the script) is the heading's scroll position. */
   .rail-mark {
-    position: absolute;
-    left: -3px; /* centre the 7px node on the left-edge baseline */
     top: calc(var(--at, 0) * 100%);
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    z-index: 1;
-    text-decoration: none;
-  }
-  .rail-dot {
-    flex: none;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    transition:
-      background-color 0.25s ease,
-      border-color 0.25s ease;
   }
   .rail-lbl {
-    position: relative;
-    font-family: var(--font-mark);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    max-width: 14rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--muted);
-    background: var(--bg); /* legible if it grazes the text column */
-    padding: 0 0.3rem;
     transition:
       color 0.15s ease,
       opacity 0.4s ease;
@@ -165,7 +132,6 @@ const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   /* h3 sits a touch in from h2 */
   .rail-mark[data-depth="3"] .rail-lbl {
     padding-left: 0.85rem;
-    font-size: 0.56rem;
   }
 
   /* reached: the node fills, and the label crosses off in its own ink
@@ -184,13 +150,6 @@ const marks = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   .rail-mark:focus-visible .rail-lbl {
     color: var(--accent);
     opacity: 1;
-  }
-
-  /* narrow screens: stand down rather than crowd the text column */
-  @media (max-width: 64rem) {
-    .rail {
-      display: none;
-    }
   }
 </style>
 

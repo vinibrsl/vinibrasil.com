@@ -7,9 +7,17 @@ if (!page) throw new Error("Missing travel page");
 const { Content } = await render(page);
 ---
 
-<Base title={page.data.title} description={page.data.description} markdown="/travel.md">
-  <article class="post log-page">
-    <header class="post-header"><h1 class="page-title">{page.data.title}</h1></header>
-    <div class="post-body"><Content /></div>
+<Base
+  title={page.data.title}
+  description={page.data.description}
+  markdown="/travel.md"
+>
+  <article class="log-page">
+    <header class="mb-6">
+      <h1>{page.data.title}</h1>
+    </header>
+    <div class="post-body">
+      <Content />
+    </div>
   </article>
 </Base>

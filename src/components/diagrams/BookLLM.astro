@@ -20,7 +20,7 @@
 ---
 
 <svg
-  class="bk diagram"
+  class="bk diagram max-w-[520px]"
   viewBox="0 0 640 200"
   role="img"
   aria-labelledby="bk-title bk-desc"
@@ -43,7 +43,14 @@
     <line class="line" x1="88" y1="126" x2="160" y2="126"></line>
   </g>
   <rect class="scan" x="84" y="62" width="92" height="9" rx="2"></rect>
-  <text class="lab" x="130" y="178" text-anchor="middle">Page</text>
+  <text
+    class="lab font-display text-xs tracking-widest uppercase"
+    x="130"
+    y="178"
+    text-anchor="middle"
+  >
+    Page
+  </text>
 
   <!-- exchange -->
   <path
@@ -53,12 +60,25 @@
     stroke-opacity="0.35"
     stroke-width="2.5"
     stroke-linecap="round"
-    stroke-dasharray="0.5 8"></path>
-  <text class="link fwd" style="animation-delay:0s">passage</text>
-  <text class="link back" style="animation-delay:3s">context</text>
+    stroke-dasharray="0.5 8"
+  ></path>
+  <text
+    class="link fwd font-display text-xs tracking-wide"
+    style="animation-delay:0s"
+  >
+    passage
+  </text>
+  <text
+    class="link back font-display text-xs tracking-wide"
+    style="animation-delay:3s"
+  >
+    context
+  </text>
 
   <!-- llm -->
-  <polygon class="hex" points="530,52 575,78 575,122 530,148 485,122 485,78"
+  <polygon
+    class="hex"
+    points="530,52 575,78 575,122 530,148 485,122 485,78"
   ></polygon>
   <g class="wire">
     <line x1="530" y1="100" x2="530" y2="55"></line>
@@ -69,19 +89,56 @@
     <line x1="530" y1="100" x2="488" y2="80"></line>
   </g>
   <circle class="node core" cx="530" cy="100" r="7"></circle>
-  <circle class="node leaf" cx="530" cy="55" r="5" style="animation-delay:.2s"
+  <circle
+    class="node leaf"
+    cx="530"
+    cy="55"
+    r="5"
+    style="animation-delay:.2s"
   ></circle>
-  <circle class="node leaf" cx="572" cy="80" r="5" style="animation-delay:.6s"
+  <circle
+    class="node leaf"
+    cx="572"
+    cy="80"
+    r="5"
+    style="animation-delay:.6s"
   ></circle>
-  <circle class="node leaf" cx="572" cy="120" r="5" style="animation-delay:1s"
+  <circle
+    class="node leaf"
+    cx="572"
+    cy="120"
+    r="5"
+    style="animation-delay:1s"
   ></circle>
-  <circle class="node leaf" cx="530" cy="145" r="5" style="animation-delay:1.4s"
+  <circle
+    class="node leaf"
+    cx="530"
+    cy="145"
+    r="5"
+    style="animation-delay:1.4s"
   ></circle>
-  <circle class="node leaf" cx="488" cy="120" r="5" style="animation-delay:1.8s"
+  <circle
+    class="node leaf"
+    cx="488"
+    cy="120"
+    r="5"
+    style="animation-delay:1.8s"
   ></circle>
-  <circle class="node leaf" cx="488" cy="80" r="5" style="animation-delay:2.2s"
+  <circle
+    class="node leaf"
+    cx="488"
+    cy="80"
+    r="5"
+    style="animation-delay:2.2s"
   ></circle>
-  <text class="lab" x="530" y="178" text-anchor="middle">LLM</text>
+  <text
+    class="lab font-display text-xs tracking-widest uppercase"
+    x="530"
+    y="178"
+    text-anchor="middle"
+  >
+    LLM
+  </text>
 </svg>
 
 <style>
@@ -129,9 +186,6 @@
      offset-path here: WebKit doesn't apply it to SVG elements, so the words
      wouldn't flow in Safari. transform on SVG <text> works everywhere. */
   .bk .link {
-    font-family: var(--font-mark, monospace);
-    font-size: 9px;
-    letter-spacing: 0.04em;
     text-anchor: middle;
     dominant-baseline: central;
   }
@@ -146,11 +200,7 @@
     animation: bk-back 6s linear infinite backwards;
   }
   .bk .lab {
-    font-family: var(--font-mark, monospace);
-    font-size: 11px;
-    letter-spacing: 0.12em;
     fill: var(--accent);
-    text-transform: uppercase;
   }
   @keyframes bk-scan {
     0%,

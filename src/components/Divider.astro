@@ -1,0 +1,17 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "pointer-events-none min-w-0 overflow-hidden font-display text-sm leading-none tracking-widest whitespace-nowrap text-muted select-none",
+    className,
+  ]}
+  aria-hidden="true"
+>
+  {"░".repeat(120)}
+</div>

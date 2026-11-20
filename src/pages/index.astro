@@ -12,22 +12,27 @@ const { Content } = await render(home);
 ---
 
 <Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <div class="intro"><Content /></div>
+  <div class="mb-14 max-w-[34rem] text-xl leading-normal text-fg-soft [text-wrap:pretty] sm:text-2xl">
+    <Content />
+  </div>
 
-  {
-    posts.length === 0 ? (
-      <p class="muted">No posts yet. Soon.</p>
-    ) : (
-      <ul class="entries">
-        {posts.map((post) => (
-          <li>
-            <a href={`/${post.id}/`}>
-              <span class="entry-title">{post.data.title}</span>
-              <FormattedDate date={post.data.pubDate} />
-            </a>
-          </li>
-        ))}
-      </ul>
-    )
-  }
+  {posts.length === 0 ? (
+    <p class="text-muted">No posts yet. Soon.</p>
+  ) : (
+    <ul class="m-0 list-none p-0">
+      {posts.map((post) => (
+        <li>
+          <a
+            class="grid grid-cols-[1fr_auto] items-baseline gap-x-6 border-b border-border py-4 text-fg no-underline"
+            href={`/${post.id}/`}
+          >
+            <span class="text-xl font-medium tracking-tight">
+              {post.data.title}
+            </span>
+            <FormattedDate date={post.data.pubDate} />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
 </Base>

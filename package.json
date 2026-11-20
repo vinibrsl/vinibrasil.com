@@ -17,10 +17,12 @@
   },
   "devDependencies": {
     "@microflash/rehype-figure": "^2.1.4",
+    "@tailwindcss/vite": "^4.3.5",
     "playwright": "^1.64.1",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "rehype-mermaid": "^3.0.0",
+    "tailwindcss": "^4.3.5",
     "unist-util-visit": "^5.2.0",
     "wrangler": "^4.156.0"
   }

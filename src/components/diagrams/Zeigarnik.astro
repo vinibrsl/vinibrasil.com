@@ -38,16 +38,20 @@ const SEG = 12;
 const GAP = 4;
 const sh = (bar.h - (SEG - 1) * GAP) / SEG; // one cell's height
 const pitch = sh + GAP;
-const cells = Array.from({ length: SEG }, (_, i) => +(bar.y + i * pitch).toFixed(2));
-const gaps = Array.from({ length: SEG - 1 }, (_, k) =>
-  +(bar.y + (k + 1) * pitch - GAP).toFixed(2),
+const cells = Array.from(
+  { length: SEG },
+  (_, i) => +(bar.y + i * pitch).toFixed(2),
+);
+const gaps = Array.from(
+  { length: SEG - 1 },
+  (_, k) => +(bar.y + (k + 1) * pitch - GAP).toFixed(2),
 );
 const labX = bar.x + bar.w + 20;
 const labY = bar.y + bar.h / 2;
 ---
 
 <svg
-  class="zg diagram"
+  class="zg diagram max-w-[580px]"
   viewBox="0 0 640 380"
   role="img"
   aria-labelledby="zg-title zg-desc"
@@ -70,31 +74,37 @@ const labY = bar.y + bar.h / 2;
     <path
       class="shoulders"
       d="M64 352 C 78 300 150 286 188 286 C 226 286 298 300 312 352"
-      fill="none"></path>
+      fill="none"
+    ></path>
     <circle class="skull" cx={head.cx} cy={head.cy} r={head.r}></circle>
   </g>
 
   <!-- the load is fed from the open loops into the meter -->
   <g class="feed">
-    <path class="feed-line" d={`M 292 166 C 374 190 416 282 ${bar.x - 2} 286`} fill="none"></path>
-    <polygon class="feed-head" points={`${bar.x + 2},286 ${bar.x - 11},280 ${bar.x - 11},292`}></polygon>
+    <path
+      class="feed-line"
+      d={`M 292 166 C 374 190 416 282 ${bar.x - 2} 286`}
+      fill="none"
+    ></path>
+    <polygon
+      class="feed-head"
+      points={`${bar.x + 2},286 ${bar.x - 11},280 ${bar.x - 11},292`}
+    ></polygon>
   </g>
 
   <!-- unfinished task-loops accumulating inside the mind -->
-  {
-    loops.map((l, i) => (
-      <g class="task" style={`animation-name:zg-pop-${i}`}>
-        <circle
-          class="loop"
-          cx={l.x}
-          cy={l.y}
-          r={TR}
-          fill="none"
-          style={`--jd:${l.jd}s;--jdelay:${l.jdelay}s;stroke-dashoffset:${l.off}`}
-        />
-      </g>
-    ))
-  }
+  {loops.map((l, i) => (
+    <g class="task" style={`animation-name:zg-pop-${i}`}>
+      <circle
+        class="loop"
+        cx={l.x}
+        cy={l.y}
+        r={TR}
+        fill="none"
+        style={`--jd:${l.jd}s;--jdelay:${l.jdelay}s;stroke-dashoffset:${l.off}`}
+      />
+    </g>
+  ))}
 
   <!-- the cognitive-load meter -->
   <g class="gauge">
@@ -104,25 +114,48 @@ const labY = bar.y + bar.h / 2;
       y={bar.y}
       width={bar.w}
       height={bar.h}
-      rx="3"></rect>
-    {gaps.map((y) => <rect class="gapstripe" x={bar.x - 1} y={y} width={bar.w + 2} height={GAP} />)}
-    {cells.map((y) => <rect class="cell" x={bar.x} y={y} width={bar.w} height={sh} rx="2" />)}
-    <rect class="bar-frame" x={bar.x} y={bar.y} width={bar.w} height={bar.h} rx="4"></rect>
+      rx="3"
+    ></rect>
+    {gaps.map((y) => (
+      <rect
+        class="gapstripe"
+        x={bar.x - 1}
+        y={y}
+        width={bar.w + 2}
+        height={GAP}
+      />
+    ))}
+    {cells.map((y) => (
+      <rect class="cell" x={bar.x} y={y} width={bar.w} height={sh} rx="2" />
+    ))}
+    <rect
+      class="bar-frame"
+      x={bar.x}
+      y={bar.y}
+      width={bar.w}
+      height={bar.h}
+      rx="4"
+    ></rect>
     <text
-      class="lab unit"
+      class="lab unit font-display text-xs tracking-widest"
       x={labX}
       y={labY}
-      transform={`rotate(90 ${labX} ${labY})`}>COGNITIVE LOAD</text>
+      transform={`rotate(90 ${labX} ${labY})`}
+    >
+      COGNITIVE LOAD
+    </text>
   </g>
 
-  <text class="lab foot" x={head.cx} y="372">OPEN LOOPS</text>
+  <text
+    class="lab foot font-display text-xs tracking-widest"
+    x={head.cx}
+    y="372"
+  >
+    OPEN LOOPS
+  </text>
 </svg>
 
 <style>
-  .zg {
-    --diagram-max: 580px;
-  }
-
   /* the mind */
   .zg .skull {
     fill: var(--accent);
@@ -205,19 +238,14 @@ const labY = bar.y + bar.h / 2;
 
   /* labels */
   .zg .lab {
-    font-family: var(--font-mark, monospace);
     fill: var(--muted);
   }
   .zg .lab.unit {
-    font-size: 13px;
     fill: var(--accent);
-    letter-spacing: 0.16em;
     text-anchor: middle;
     dominant-baseline: middle;
   }
   .zg .lab.foot {
-    font-size: 12px;
-    letter-spacing: 0.18em;
     text-anchor: middle;
   }
 
@@ -295,39 +323,124 @@ const labY = bar.y + bar.h / 2;
      the rattle, then it dissolves outward (scale up + fade) at the clear.
      Only the entry time differs between them. */
   @keyframes zg-pop-0 {
-    0%, 6% { opacity: 0; transform: scale(0.3); }
-    9% { opacity: 1; transform: scale(1.16); }
-    12%, 80% { opacity: 1; transform: scale(1); }
-    86% { opacity: 0.85; transform: scale(1.06); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0%,
+    6% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    9% {
+      opacity: 1;
+      transform: scale(1.16);
+    }
+    12%,
+    80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    86% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
   @keyframes zg-pop-1 {
-    0%, 19% { opacity: 0; transform: scale(0.3); }
-    22% { opacity: 1; transform: scale(1.16); }
-    25%, 80% { opacity: 1; transform: scale(1); }
-    86% { opacity: 0.85; transform: scale(1.06); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0%,
+    19% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    22% {
+      opacity: 1;
+      transform: scale(1.16);
+    }
+    25%,
+    80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    86% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
   @keyframes zg-pop-2 {
-    0%, 32% { opacity: 0; transform: scale(0.3); }
-    35% { opacity: 1; transform: scale(1.16); }
-    38%, 80% { opacity: 1; transform: scale(1); }
-    86% { opacity: 0.85; transform: scale(1.06); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0%,
+    32% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    35% {
+      opacity: 1;
+      transform: scale(1.16);
+    }
+    38%,
+    80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    86% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
   @keyframes zg-pop-3 {
-    0%, 45% { opacity: 0; transform: scale(0.3); }
-    48% { opacity: 1; transform: scale(1.16); }
-    51%, 80% { opacity: 1; transform: scale(1); }
-    86% { opacity: 0.85; transform: scale(1.06); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0%,
+    45% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    48% {
+      opacity: 1;
+      transform: scale(1.16);
+    }
+    51%,
+    80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    86% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
   @keyframes zg-pop-4 {
-    0%, 58% { opacity: 0; transform: scale(0.3); }
-    61% { opacity: 1; transform: scale(1.16); }
-    64%, 80% { opacity: 1; transform: scale(1); }
-    86% { opacity: 0.85; transform: scale(1.06); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0%,
+    58% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    61% {
+      opacity: 1;
+      transform: scale(1.16);
+    }
+    64%,
+    80% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    86% {
+      opacity: 0.85;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
 
   /* resting state: the canonical still picture — a mind full of open loops with

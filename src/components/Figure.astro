@@ -12,13 +12,7 @@ interface Props {
   loading?: "lazy" | "eager";
 }
 
-const {
-  src,
-  alt,
-  caption,
-  class: className,
-  loading,
-} = Astro.props;
+const { src, alt, caption, class: className, loading } = Astro.props;
 const image = {
   src,
   alt,
