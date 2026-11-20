@@ -1,0 +1,35 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  active?: boolean;
+}
+
+const { href, active = false, class: className, ...attributes } = Astro.props;
+const styles = [
+  "inline-flex min-h-9 items-center bg-transparent p-0 font-display text-xs tracking-wider uppercase no-underline",
+  active ? "terminal-link-active" : "text-fg-soft",
+  className,
+];
+---
+
+{href ? (
+  <a href={href} {...attributes} class:list={styles}>
+    <span class="terminal-link-label"><span aria-hidden="true">[&nbsp;</span><slot /><span aria-hidden="true">&nbsp;]</span></span>
+  </a>
+) : (
+  <button type="button" {...attributes} class:list={[...styles, "cursor-pointer border-0"]}>
+    <span class="terminal-link-label"><span aria-hidden="true">[&nbsp;</span><span data-share-label><slot /></span><span aria-hidden="true">&nbsp;]</span></span>
+  </button>
+)}
+
+<style>
+  .terminal-link-active .terminal-link-label,
+  a:hover .terminal-link-label,
+  a:focus-visible .terminal-link-label,
+  button:hover .terminal-link-label,
+  button:focus-visible .terminal-link-label {
+    background: var(--accent);
+    color: var(--bg);
+  }
+</style>

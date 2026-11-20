@@ -23,7 +23,7 @@ export function formatDate(date: Date): string {
 // Strip MDX-only syntax so the body reads as plain Markdown for LLMs and
 // other Markdown consumers: ES imports and the self-closing diagram
 // components (<BookLLM />) that only carry visual meaning.
-export function toPlainMarkdown(body = ""): string {
+export function toPlainMarkdown(body: string, site: URL): string {
   const imports = Object.fromEntries(
     [...body.matchAll(/^import (\w+) from ["']([^"']+)["']/gm)].map(
       ([, name, source]) => [name, source],
@@ -34,16 +34,22 @@ export function toPlainMarkdown(body = ""): string {
       /<Figure\b[^>]*src=\{(\w+)\}[^>]*alt="([^"]*)"[^>]*>[\s\S]*?<\/Figure>/g,
       (_, source, alt) => `![${alt}](${imports[source]})`,
     )
-    .replace(/(\]\()\.\.\/\.\.\/assets\//g, "$1/")
     .replace(/^import\s.+?$/gm, "")
     .replace(/^\s*<[A-Z][\w.]*\s*\/>\s*$/gm, "")
+    .replace(/(\]\()([^)]+)(\))/g, (_, open, destination, close) => {
+      if (/^(?:[a-z][a-z\d+.-]*:|#)/i.test(destination)) {
+        return `${open}${destination}${close}`;
+      }
+      const path = destination.replace(/^\.\.\/\.\.\/assets\//, "/assets/");
+      return `${open}${new URL(path, site).href}${close}`;
+    })
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
 // A single post rendered as a self-contained Markdown document: title,
 // description, byline/dates, then the cleaned body.
-export function postToMarkdown(post: Post): string {
+export function postToMarkdown(post: Post, site: URL): string {
   const { title, description, pubDate, updatedDate } = post.data;
   const meta = [`Published ${formatDate(pubDate)} by ${AUTHOR}.`];
   if (updatedDate) meta.push(`Updated ${formatDate(updatedDate)}.`);
@@ -58,7 +64,7 @@ export function postToMarkdown(post: Post): string {
       "",
       "---",
       "",
-      toPlainMarkdown(post.body),
+      toPlainMarkdown(post.body, site),
     ].join("\n") + "\n"
   );
 }

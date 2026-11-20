@@ -61,11 +61,11 @@
     Consolas, monospace;
 
   /* paper (light) palette */
-  --bg: #f4f1ea;
+  --bg: #fff;
   --bg-soft: #ebe6db;
   --fg: #1c1b18;
   --fg-soft: #423f38;
-  --muted: #847f72;
+  --muted: #6e695f;
   --accent: #2a4fd6; /* retro blue */
   --accent-soft: #2a4fd61a;
   --border: #ddd7c9;
@@ -113,20 +113,20 @@ h2,
 h3,
 h4 {
   @apply font-reading text-fg;
-  font-weight: 560;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  font-weight: 520;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 h1 {
-  @apply m-0 text-4xl;
+  @apply m-0 text-3xl;
 }
 h2 {
-  @apply mt-11 mb-2 text-2xl;
+  @apply mt-11 mb-2 text-xl;
 }
 h3 {
-  @apply mt-8 mb-2 text-xl;
+  @apply mt-8 mb-2 text-lg;
 }
 
 /* ── links ───────────────────────────────────────────────────── */
@@ -143,15 +143,21 @@ main {
 
 @media (min-width: 40rem) {
   h1 {
-    @apply text-5xl;
+    @apply text-4xl;
   }
   h2 {
-    @apply text-3xl;
+    @apply text-2xl;
+  }
+  h3 {
+    @apply text-xl;
   }
 }
 /* post body rhythm */
 .post-body {
-  @apply mt-6;
+  @apply flow-root;
+}
+.post-body > :first-child {
+  @apply mt-0;
 }
 .post-body > * + * {
   @apply mt-6;
@@ -310,12 +316,15 @@ main {
   }
 }
 .post-body blockquote {
-  @apply my-8 border-l-2 border-accent pl-6 text-xl;
+  @apply mx-0 my-8 border-l-2 border-accent pl-5 text-xl;
   line-height: 1.4;
   @apply text-fg-soft italic;
 }
 .post-body blockquote p {
   @apply m-0;
+}
+.post-body blockquote cite {
+  @apply mt-3 block font-display text-xs not-italic text-muted;
 }
 .post-body ul,
 .post-body ol {

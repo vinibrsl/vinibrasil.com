@@ -1,16 +1,19 @@
 ---
 interface Props {
   date: Date;
+  terminal?: boolean;
 }
-const { date } = Astro.props;
+const { date, terminal = false } = Astro.props;
 ---
 
-<time class="label" datetime={date.toISOString()}>
+<time class={terminal ? undefined : "label"} datetime={date.toISOString()}>
   {
-    date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
+    terminal
+      ? date.toISOString().slice(0, 10)
+      : date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
   }
 </time>

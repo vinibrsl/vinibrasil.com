@@ -7,7 +7,6 @@ export const AUTHOR = "Vinicius Brasil";
 export const TWITTER_HANDLE = "@vinibrsl";
 
 export const NAV_LINKS = [
-  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/reading", label: "Reading" },
   { href: "/travel", label: "Travel" },

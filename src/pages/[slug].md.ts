@@ -10,7 +10,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 };
 
-export const GET: APIRoute = ({ props }) =>
-  new Response(postToMarkdown(props.post as Post), {
+export const GET: APIRoute = ({ props, site }) =>
+  new Response(postToMarkdown(props.post as Post, site!), {
     headers: { "Content-Type": "text/markdown; charset=utf-8" },
   });

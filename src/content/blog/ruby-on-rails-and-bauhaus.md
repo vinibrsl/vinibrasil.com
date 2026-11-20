@@ -87,7 +87,8 @@ web standard.
 
 > I knew Python then. But I didn't like it, because I didn't think it was a
 > true object-oriented language — OO features appeared to be an add-on.
-> — Matz, creator of Ruby
+>
+> <cite>— Matz, creator of Ruby</cite>
 
 Ruby's rise is closely tied to the paradigm shift brought about by Ruby on
 Rails. In 2016, DHH wrote *The Rails Doctrine*, which dives deeper into the
@@ -97,7 +98,8 @@ no-nonsense approach to software development:
 
 > Rails' rise owed much to novel technology and timing. But advantages erode
 > over time. Its enduring enabler has been its controversial doctrine.
-> — DHH
+>
+> <cite>— DHH</cite>
 
 ## Footprints
 

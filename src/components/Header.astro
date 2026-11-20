@@ -1,12 +1,12 @@
 ---
 import { SITE_TITLE, NAV_LINKS } from "../consts";
 import Divider from "./Divider.astro";
+import TerminalLink from "./TerminalLink.astro";
 const path = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === "/" ? path === "/" : path.startsWith(href);
+const isActive = (href: string) => path.startsWith(href);
 ---
 
-<header class="mx-auto mb-8 flex w-full max-w-measure flex-wrap items-end justify-between gap-x-6 gap-y-3 pt-9">
+<header class="mx-auto mb-10 flex w-full max-w-measure flex-wrap items-center justify-between gap-x-4 gap-y-6 pt-9 sm:mb-12">
   <a
     href="/"
     class="inline-flex items-center gap-[0.5ch] font-display text-xl leading-none tracking-wide text-accent no-underline uppercase"
@@ -17,18 +17,15 @@ const isActive = (href: string) =>
       aria-hidden="true"
     ></span>
   </a>
-  <nav class="flex gap-6 pb-1" aria-label="Primary">
+  <nav class="flex flex-wrap gap-x-2" aria-label="Primary">
     {NAV_LINKS.map((link) => (
-      <a
+      <TerminalLink
         href={link.href}
-        class:list={[
-          "font-display text-xs tracking-wider no-underline uppercase",
-          isActive(link.href) ? "text-accent" : "text-muted",
-        ]}
+        active={isActive(link.href)}
       >
         {link.label}
-      </a>
+      </TerminalLink>
     ))}
   </nav>
-  <Divider class="mt-4 basis-full" />
+  <Divider class="basis-full" />
 </header>
